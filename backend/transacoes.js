@@ -3,11 +3,6 @@ const router = express.Router();
 const path = require('path');
 const db = require('./database/sqliteConnection');
 
-
-router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'src', 'transacoes.html'));
-});
-
 // Rota para obter todas as transações
 router.get('/transacoes', (req, res) => {
     db.all(`SELECT Transacao.Id, Transacao.Nome, TipoTransacao.Nome AS Tipo, Categoria.Nome AS Categoria, MeioPagamento.Nome AS MeioPagamento, Transacao.Valor, Transacao.Data 
@@ -76,10 +71,6 @@ router.put('/transacoes/:id', (req, res) => {
         }
         res.json({ message: "Transação atualizada com sucesso!" });
     });
-});
-
-router.get('/transacoes', (req, res)=>{
-    res.sendFile(path.join(__dirname, '..', 'src/css', 'transacoes.css'));
 });
 
 module.exports = router;

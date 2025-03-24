@@ -129,6 +129,35 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const fetchTransacoes = () => {
+        fetch('/api/transacoes') 
+            .then(response => response.json())
+            .then(data => {
+                const transacoesLista = document.getElementById("transacoes-lista");
+                transacoesLista.innerHTML = '';
+
+                data.forEach(transacao => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transacao.Tipo}</td>
+                        <td>${transacao.Categoria}</td>
+                        <td class="${transacao.Tipo === 'Receita' ? 'valor-receita' : 'valor-despesa'}">R$ ${parseFloat(transacao.Valor).toFixed(2)}</td>
+                        <td>${transacao.Data}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger btn-delete"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+                    transacoesLista.appendChild(row);
+                });
+            })
+            .catch(error => console.error("Error loading transactions:", error));
+    };
+
+    fetchTransacoes();
+
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     const transacoesLista = document.getElementById("transacoes-lista");
