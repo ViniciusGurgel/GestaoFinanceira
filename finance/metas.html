@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metas de Gastos</title>
+    <link rel="stylesheet" href="css/relatorios.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/relatorios.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header text-center">
+            <img src="img/usuario.jpg" alt="Foto de Perfil" class="profile-image">
+            <h6 class="user-name">Usuário</h6>
+            <p class="user-description">Gestão Financeira</p>
+        </div>
+        <div class="sidebar-body">
+            <ul class="menu">
+                <li><a href="dashboard.html" class="menu-link">🏠 Dashboard</a></li>
+                <li><a href="transacoes.html" class="menu-link">📊 Transações</a></li>
+                <li><a href="metas.html" class="menu-link active">📅 Metas de Gastos</a></li>
+                <li><a href="relatorios.html" class="menu-link">📑 Relatórios</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content container-fluid">
+        <h1 class="text-center mb-4">Metas de Gastos</h1>
+
+        <!-- Tabela de Metas -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center">Metas Atuais</h2>
+                <div class="text-center mb-4">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+                        + Criar Meta de Gasto
+                    </button>
+                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="goals-list">
+                        <!-- Metas serão inseridas aqui via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal para Adicionar Meta -->
+        <div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addGoalModalLabel">Adicionar Nova Meta de Gasto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="goalForm">
+                            <div class="mb-3">
+                                <label for="goalCategory" class="form-label">Categoria</label>
+                                <input type="text" class="form-control" id="goalCategory" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="goalValue" class="form-label">Valor</label>
+                                <input type="number" class="form-control" id="goalValue" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="goalDate" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="goalDate" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-MrcW6ZMFyB1V8V+U4KxogYtRI6wK6o2QnNJlX27Nu7MZlzT7nN6M7Il2e0F9zNs0" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const goalForm = document.getElementById("goalForm");
+            const goalsList = document.getElementById("goals-list");
+
+            const loadGoals = () => {
+                const goals = JSON.parse(localStorage.getItem("goals")) || [];
+                goalsList.innerHTML = goals.map((goal, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${goal.category}</td>
+                        <td>R$ ${goal.value.toFixed(2)}</td>
+                        <td>${goal.date}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editGoal(${index})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteGoal(${index})"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            };
+
+            const saveGoal = (category, value, date) => {
+                const goals = JSON.parse(localStorage.getItem("goals")) || [];
+                goals.push({ category, value, date });
+                localStorage.setItem("goals", JSON.stringify(goals));
+                loadGoals();
+            };
+
+            const editGoal = (index) => {
+                const goals = JSON.parse(localStorage.getItem("goals")) || [];
+                const goal = goals[index];
+                document.getElementById("goalCategory").value = goal.category;
+                document.getElementById("goalValue").value = goal.value;
+                document.getElementById("goalDate").value = goal.date;
+                goals.splice(index, 1);
+                localStorage.setItem("goals", JSON.stringify(goals));
+                loadGoals();
+                const modal = new bootstrap.Modal(document.getElementById('addGoalModal'));
+                modal.show();
+            };
+
+            const deleteGoal = (index) => {
+                const goals = JSON.parse(localStorage.getItem("goals")) || [];
+                goals.splice(index, 1);
+                localStorage.setItem("goals", JSON.stringify(goals));
+                loadGoals();
+            };
+
+            goalForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const category = document.getElementById("goalCategory").value;
+                const value = parseFloat(document.getElementById("goalValue").value);
+                const date = document.getElementById("goalDate").value;
+
+                if (category && !isNaN(value) && date) {
+                    saveGoal(category, value, date);
+                    goalForm.reset();
+                    const modal = new bootstrap.Modal(document.getElementById('addGoalModal'));
+                    modal.hide();
+                } else {
+                    alert("Por favor, preencha todos os campos.");
+                }
+            });
+
+            loadGoals();
+        });
+    </script>
+</body>
+
+</html>

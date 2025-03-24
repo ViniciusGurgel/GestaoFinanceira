@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Dashboard de Finanças">
+    <meta name="author" content="Seu Nome">
+    <title>Financify - Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-MrcW6ZMFyB1V8V+U4KxogYtRI6wK6o2QnNJlX27Nu7MZlzT7nN6M7Il2e0F9zNs0" crossorigin="anonymous"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+
+    <script src="js/geral.js" defer></script>
+
+    <style>
+        /* Reduzir o tamanho dos gráficos */
+        canvas {
+            max-width: 100% !important;
+            max-height: 300px !important;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="page d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header text-center">
+                <img src="img/usuario.jpg" alt="Foto de Perfil" class="profile-image">
+                <h6 class="user-name">Usuário</h6>
+                <p class="user-description">Gestão Financeira</p>
+            </div>
+            <div class="sidebar-body">
+                <ul class="menu">
+                    <li><a href="dashboard.html" class="menu-link">🏠 Dashboard</a></li>
+                    <li><a href="transacoes.html" class="menu-link">📊 Transações</a></li>
+                    <li><a href="metas.html" class="menu-link">📅 Metas de Gastos</a></li>
+                    <li><a href="relatorios.html" class="menu-link">📑 Relatórios</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content container-fluid">
+            <div class="dashboard-header">
+                <h3>Dashboard</h3>
+                <p>Bem-vindo <span id="user-name">[Nome]</span> ao painel de controle, aqui você pode ver um resumo de suas finanças.</p>
+            </div>
+            
+            <div class="page-body">
+                <div class="row mb-4">
+                    <!-- Gráficos na parte superior -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Gráfico de Despesas e Receitas</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="financeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Gráfico de Categorias de Despesas</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <!-- Novo gráfico de linha -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Evolução das Despesas e Receitas</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="lineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Metas Financeiras -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Metas Financeiras</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="goalsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <!-- Resumo de Categorias -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Resumo de Categorias</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>Alimentação:</strong> R$ 350,00</li>
+                                    <li><strong>Transporte:</strong> R$ 150,00</li>
+                                    <li><strong>Lazer:</strong> R$ 100,00</li>
+                                    <li><strong>Saúde:</strong> R$ 200,00</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metas Financeiras -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Metas Financeiras</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>Meta de economia:</strong> R$ 500,00 (40% concluído)</li>
+                                    <li><strong>Meta de redução de gastos:</strong> R$ 300,00 (30% concluído)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Últimas Transações -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Últimas Transações</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-hover table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tipo</th>
+                                            <th>Categoria</th>
+                                            <th>Valor</th>
+                                            <th>Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Despesa</td>
+                                            <td>Alimentação</td>
+                                            <td>R$ 150,00</td>
+                                            <td>2024-03-15</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Receita</td>
+                                            <td>Salário</td>
+                                            <td>R$ 3000,00</td>
+                                            <td>2024-03-10</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Despesa</td>
+                                            <td>Transporte</td>
+                                            <td>R$ 80,00</td>
+                                            <td>2024-03-12</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Gráfico de Despesas e Receitas
+        const financeChartCtx = document.getElementById('financeChart').getContext('2d');
+        new Chart(financeChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril'],
+                datasets: [
+                    {
+                        label: 'Receitas',
+                        data: [3000, 2500, 3200, 2800],
+                        backgroundColor: '#4CAF50', // Verde sólido
+                        borderColor: '#388E3C', // Verde escuro sólido
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Despesas',
+                        data: [2000, 1800, 2200, 2000],
+                        backgroundColor: '#F44336', // Vermelho sólido
+                        borderColor: '#D32F2F', // Vermelho escuro sólido
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            }
+        });
+
+        // Gráfico de Categorias de Despesas
+        const categoryChartCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryChartCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
+                datasets: [
+                    {
+                        data: [350, 150, 100, 200],
+                        backgroundColor: [
+                            '#FF5722', // Laranja sólido
+                            '#2196F3', // Azul sólido
+                            '#FFC107', // Amarelo sólido
+                            '#9C27B0'  // Roxo sólido
+                        ],
+                        borderColor: [
+                            '#E64A19', // Laranja escuro sólido
+                            '#1976D2', // Azul escuro sólido
+                            '#FFA000', // Amarelo escuro sólido
+                            '#7B1FA2'  // Roxo escuro sólido
+                        ],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            }
+        });
+
+        // Gráfico de Evolução das Despesas e Receitas
+        const lineChartCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineChartCtx, {
+            type: 'line',
+            data: {
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril'],
+                datasets: [
+                    {
+                        label: 'Receitas',
+                        data: [3000, 2500, 3200, 2800],
+                        borderColor: '#4CAF50', // Verde sólido
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)', // Verde translúcido
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Despesas',
+                        data: [2000, 1800, 2200, 2000],
+                        borderColor: '#F44336', // Vermelho sólido
+                        backgroundColor: 'rgba(244, 67, 54, 0.2)', // Vermelho translúcido
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            }
+        });
+
+        // Gráfico de Metas Financeiras
+        const goalsChartCtx = document.getElementById('goalsChart').getContext('2d');
+        new Chart(goalsChartCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Concluído', 'Restante'],
+                datasets: [
+                    {
+                        data: [40, 60],
+                        backgroundColor: [
+                            '#4CAF50', // Verde sólido
+                            '#FFC107'  // Amarelo sólido
+                        ],
+                        borderColor: [
+                            '#388E3C', // Verde escuro sólido
+                            '#FFA000'  // Amarelo escuro sólido
+                        ],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            }
+        });
+    });
+</script>
+
+
+
+</html>

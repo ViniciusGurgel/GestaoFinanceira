@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Financeiro</title>
+    <link rel="stylesheet" href="css/relatorios.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/relatorios.css">
+
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header text-center">
+            <img src="img/usuario.jpg" alt="Foto de Perfil" class="profile-image">
+            <h6 class="user-name">Usuário</h6>
+            <p class="user-description">Gestão Financeira</p>
+        </div>
+        <div class="sidebar-body">
+            <ul class="menu">
+                <li><a href="dashboard.html" class="menu-link">🏠 Dashboard</a></li>
+                <li><a href="transacoes.html" class="menu-link">📊 Transações</a></li>
+                <li><a href="metas.html" class="menu-link">📅 Metas de Gastos</a></li>
+                <li><a href="relatorios.html" class="menu-link active">📑 Relatórios</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content container-fluid">
+        <h1 class="text-center mb-4">Relatório Financeiro</h1>
+
+        <!-- Síntese dos Dados -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center">Síntese dos Dados</h2>
+                <p class="text-center">Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Total de transações:</strong> 30 transações</li>
+                    <li class="list-group-item"><strong>Total gasto:</strong> R$ 3.500,00</li>
+                    <li class="list-group-item"><strong>Categoria com maior gasto:</strong> Alimentação</li>
+                    <li class="list-group-item"><strong>Data mais recente:</strong> 22/03/2025</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row">
+            <!-- Gráfico de Barras -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Gastos por Categoria
+                    </div>
+                    <div class="card-body">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Pizza -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Distribuição de Gastos
+                    </div>
+                    <div class="card-body">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão para Baixar Relatório -->
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" id="downloadBtn">Baixar Relatório em PDF</button>
+        </div>
+    </div>
+
+    <script>
+        // Inicialização dos gráficos
+        document.addEventListener("DOMContentLoaded", function () {
+            // Gráfico de Barras
+            const barChartCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
+                    datasets: [{
+                        label: 'Gastos (R$)',
+                        data: [1500, 800, 500, 700],
+                        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
+                        borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                    },
+                }
+            });
+
+            // Gráfico de Pizza
+            const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
+                    datasets: [{
+                        data: [1500, 800, 500, 700],
+                        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
+                        borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                    },
+                }
+            });
+        });
+
+        // Função para baixar o relatório em PDF
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('Relatório Financeiro', 105, 20, null, null, 'center');
+
+            doc.setFontSize(16);
+            doc.text('Síntese dos Dados', 20, 40);
+
+            doc.setFontSize(12);
+            doc.text('Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:', 20, 50);
+            doc.text('Total de transações: 30 transações', 20, 60);
+            doc.text('Total gasto: R$ 3.500,00', 20, 70);
+            doc.text('Categoria com maior gasto: Alimentação', 20, 80);
+            doc.text('Data mais recente: 22/03/2025', 20, 90);
+
+            doc.save('relatorio_financeiro.pdf');
+        });
+    </script>
+
+</body>
+</html>
