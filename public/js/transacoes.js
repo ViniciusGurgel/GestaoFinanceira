@@ -33,16 +33,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         applyFiltersButton.classList.add("active");
     });
 
-    const updateTotalBalance = (balance) => {
-        totalBalanceElement.textContent = `Saldo Total: R$ ${balance.toFixed(2)}`;
-        if (balance < 0) {
-            totalBalanceElement.classList.remove("positive");
-            totalBalanceElement.classList.add("negative");
-        } else {
-            totalBalanceElement.classList.remove("negative");
-            totalBalanceElement.classList.add("positive");
-        }
-    };
 
     // Função para editar transação
     const editarTransacao = (linha) => {
@@ -66,10 +56,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Exibir o modal
         addTransactionModal.show();
     };
-
-    // Exemplo de cálculo do saldo total
-    const saldoTotal = 2850;
-    updateTotalBalance(saldoTotal);
 
     // Mostrar o modal quando o botão é clicado
     const addTransactionModalButton = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#addTransactionModal"]');
@@ -190,6 +176,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             `;
             transacoesLista.appendChild(novaLinha);
         });
+        atualizarSaldoTotal();
     };
 
     // Função para excluir uma transação
@@ -239,19 +226,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Recarregar lista original ao clicar na aba "Todas"
     document.querySelector('[href="#todas"]').addEventListener("click", () => {
         renderizarTransacoes(transacoesOriginais);
+        atualizarSaldoTotal();
     });
 
     // Recarregar lista de receitas
     document.querySelector('[href="#receitas"]').addEventListener("click", () => {
         const receitas = transacoesOriginais.filter((t) => t.tipo === "Receita");
         renderizarTransacoes(receitas);
+        atualizarSaldoTotal();
     });
 
     // Recarregar lista de despesas
     document.querySelector('[href="#despesas"]').addEventListener("click", () => {
         const despesas = transacoesOriginais.filter((t) => t.tipo === "Despesa");
         renderizarTransacoes(despesas);
+        atualizarSaldoTotal();
     });
+
+    
 
     const modal = document.getElementById("addTransactionModal");
 
@@ -301,3 +293,36 @@ document.addEventListener("DOMContentLoaded", async function () {
          }
      });
 });
+
+
+function atualizarSaldoTotal() {
+    let totalReceitas = 0;
+    let totalDespesas = 0;
+
+    // Seleciona todas as linhas da tabela
+    document.querySelectorAll("#transacoes-lista tr").forEach((linha) => {
+        let tipo = linha.cells[0].textContent.trim(); // "Receita" ou "Despesa"
+        let valorTexto = linha.cells[2].textContent.trim().replace("R$", "").replace(",", ".");
+        let valor = parseFloat(valorTexto);
+
+        if (tipo === "Receita") {
+            totalReceitas += valor;
+        } else if (tipo === "Despesa") {
+            totalDespesas += valor;
+        }
+    });
+
+    let saldoTotal = totalReceitas - totalDespesas;
+    let saldoElement = document.getElementById("total-balance");
+
+    saldoElement.textContent = `Saldo Total: R$ ${saldoTotal.toFixed(2)}`;
+
+    // Adiciona classes para mudar a cor do saldo
+    if (saldoTotal >= 0) {
+        saldoElement.classList.remove("negative");
+        saldoElement.classList.add("positive");
+    } else {
+        saldoElement.classList.remove("positive");
+        saldoElement.classList.add("negative");
+    }
+}
