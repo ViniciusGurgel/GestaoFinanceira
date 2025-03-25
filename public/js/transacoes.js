@@ -315,7 +315,7 @@ function atualizarSaldoTotal() {
     let saldoTotal = totalReceitas - totalDespesas;
     let saldoElement = document.getElementById("total-balance");
 
-    saldoElement.textContent = `Saldo Total: R$ ${saldoTotal.toFixed(2)}`;
+    saldoElement.textContent = `Saldo Total: R$ ${Math.abs(saldoTotal).toFixed(2)}`;
 
     // Adiciona classes para mudar a cor do saldo
     if (saldoTotal >= 0) {
