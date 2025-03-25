@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const transacaoRouter  = require('./backend/transacoes.js')
+const authRouter = require('./backend/login.js');
 
 
 const app = express();
@@ -15,7 +16,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', transacaoRouter);
-
+app.use('/auth', authRouter);
 
 
 app.listen(port, '0.0.0.0', () => {
