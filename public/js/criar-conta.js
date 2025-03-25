@@ -15,3 +15,20 @@ document.getElementById("registerForm").addEventListener("submit", function (eve
         document.getElementById("errorMessage").style.display = "block";
     }
 });
+document.getElementById('show-password').addEventListener('change', function () {
+    const passwordField = document.getElementById('Password');
+    const passwordConfirmField = document.getElementById('PasswordConfirm');
+
+    if (this.checked) {
+        passwordField.type = 'text';
+        passwordConfirmField.type = 'text';
+    } else {
+        passwordField.type = 'password';
+        passwordConfirmField.type = 'password';
+    }
+});
+
+document.getElementById("registerForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    window.location.href = "codigo-verificacao.html"; 
+});

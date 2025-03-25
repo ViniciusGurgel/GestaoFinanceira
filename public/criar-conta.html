@@ -48,9 +48,22 @@
                                 <label for="username">Nome de usuário</label>
                                 <input type="text" id="username" class="form-control" placeholder="Escolha um nome de usuário" required>
                             </div>
-                            <div class="form-group">
-                                <label for="password">Senha</label>
-                                <input type="password" id="password" class="form-control" placeholder="Crie uma senha" required>
+                            <div class="row">
+                                <div class="col-md-6 mb-1">
+                                    <label for="password" class="form-label">Senha</label>
+                                    <input type="password" class="form-control" id="Password" placeholder="Crie uma senha"  name="password" required>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <label for="password-confirm" class="form-label">Confirmar senha</label>
+                                    <input type="password" class="form-control" id="PasswordConfirm" placeholder="Confirme a senha" name="password-confirm" required>
+                                </div>
+                                <div class="col-md-12 mb-1"> <small id="passwordHelpInline" class="text-muted">
+                                        A senha deve ter entre 8 e 20 caracteres.
+                                    </small></div>
+                                <div class="col-md-12 mb-3">
+                                    <input type="checkbox" id="show-password" class="form-check-input">
+                                    <label for="show-password" class="form-check-label">Mostrar Senhas</label>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Criar Conta</button>
                         </form>
