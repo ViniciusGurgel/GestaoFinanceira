@@ -44,6 +44,29 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     };
 
+    // Função para editar transação
+    const editarTransacao = (linha) => {
+        const id = linha.dataset.id;
+        const tipo = linha.children[0].textContent.trim();
+        const categoria = linha.children[1].textContent.trim();
+        const valor = linha.children[2].textContent.replace("R$ ", "").trim();
+        const data = linha.children[3].textContent.trim();
+
+        // Preencher o modal com os dados existentes da transação
+        document.getElementById("transactionType").value = tipo === "Receita" ? "receita" : "despesa";
+        document.getElementById("transactionCategory").value = categoria;
+        document.getElementById("transactionValue").value = parseFloat(valor);
+        document.getElementById("transactionDate").value = data;
+
+        // Adicionar um atributo temporário ao botão para indicar modo de edição
+        const addTransactionButton = document.getElementById("addTransactionButton");
+        addTransactionButton.dataset.editingId = id;
+        addTransactionButton.textContent = "Salvar Alterações";
+
+        // Exibir o modal
+        addTransactionModal.show();
+    };
+
     // Exemplo de cálculo do saldo total
     const saldoTotal = 2850;
     updateTotalBalance(saldoTotal);
@@ -73,39 +96,61 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const novaTransacao = {
             nome: "Teste",
-            tipoTransacaoId: 1,
+            tipoTransacaoId: tipo === "receita" ? 1 : 2,
             meioPagamentoId: 1,
-            categoria: 1,
+            categoriaId: 1,
             valor: valor,
             data: data
         };
 
         try {
-            // Enviar a transação para a API
-            const response = await fetch("/api/adicionar_transacao", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(novaTransacao)
-            });
-
-            if (!response.ok) {
-                throw new Error("Erro ao adicionar transação.");
+            let response;
+            const id = addTransactionButton.dataset.editingId;
+            if (id) {
+                // Editando transação existente
+                response = await fetch(`/api/alterar_transacao/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(novaTransacao)
+                });
+        
+                if (!response.ok) {
+                    throw new Error("Erro ao atualizar a transação.");
+                }
+        
+                alert("Transação atualizada com sucesso!");
+            } else {
+                // Adicionando nova transação
+                response = await fetch("/api/adicionar_transacao", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(novaTransacao)
+                });
+        
+                if (!response.ok) {
+                    throw new Error("Erro ao adicionar transação.");
+                }
+        
+                alert("Transação adicionada com sucesso!");
             }
-
-            // Fechar o modal
+        
+            // Fechar o modal e resetar o botão
             addTransactionModal.hide();
-
+            addTransactionButton.removeAttribute("data-editing-id"); // Remove o atributo de edição
+            addTransactionButton.textContent = "Adicionar Transação"; // Reseta o texto do botão
+        
             // Atualizar a lista de transações
             const transacoesAtualizadas = await fetchTransacoes();
             renderizarTransacoes(transacoesAtualizadas);
-            alert("Transação adicionada com sucesso!");
-
+        
         } catch (error) {
             console.error(error);
-            alert("Falha ao adicionar a transação.");
-        }
+            alert("Ocorreu um erro ao salvar a transação.");
+        }        
     });
 
     // Lista original de transações
@@ -212,12 +257,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     modal.addEventListener("hidden.bs.modal", function () {
         // Remove manualmente o backdrop caso ele permaneça
+        document.getElementById("transactionType").value = "";
+        document.getElementById("transactionCategory").value = "";
+        document.getElementById("transactionValue").value = "";
+        document.getElementById("transactionDate").value = "";
+
+        const addTransactionButton = document.getElementById("addTransactionButton");
+        addTransactionButton.textContent = "Adicionar";
+        delete addTransactionButton.dataset.editingId;
+
         const backdrop = document.querySelector(".modal-backdrop");
         if (backdrop) {
             backdrop.remove();
         }
+
         document.body.classList.remove("modal-open"); // Remove a classe que impede o scroll
-        document.body.style = ""; // Remove estilos inline adicionados pelo Bootstrap
+        document.body.style = "";
+
     });
 
      // Obtém o caminho da URL atual

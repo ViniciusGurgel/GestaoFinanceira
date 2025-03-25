@@ -22,14 +22,13 @@ router.get('/listar_transacoes', (req, res) => {
 
 // Rota para adicionar uma nova transação
 router.post('/adicionar_transacao', (req, res) => {
-    const { nome, tipoTransacaoId, meioPagamentoId,categoria, valor, data } = req.body;
-    console.log(req.body);
-    if (!nome || !tipoTransacaoId || !categoria || !meioPagamentoId || !valor || !data) {
+    const { nome, tipoTransacaoId, meioPagamentoId, categoriaId, valor, data } = req.body;
+    if (!nome || !tipoTransacaoId || !categoriaId || !meioPagamentoId || !valor || !data) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
 
     const sql = `INSERT INTO Transacao (Nome, TipoTransacaoId, CategoriaId, MeioPagamentoId, Valor, Data) VALUES (?, ?, ?, ?, ?, ?)`;
-    const params = [nome, tipoTransacaoId, categoria, meioPagamentoId, valor, data];
+    const params = [nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data];
 
     db.run(sql, params, function (err) {
         if (err) {
@@ -56,13 +55,18 @@ router.delete('/deletar_transacao/:id', (req, res) => {
 // Rota para editar uma transação
 router.put('/alterar_transacao/:id', (req, res) => {
     const { id } = req.params;
-    const { nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data } = req.body;
+    const {nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data } = req.body;
 
     if (!nome || !tipoTransacaoId || !categoriaId || !meioPagamentoId || !valor || !data) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
+    console.log("Dados recebidos para atualização:", req.body);
+    console.log("ID recebido:", id);
 
-    const sql = `UPDATE Transacao SET TipoTransacaoId = ?, CategoriaId = ?, Valor = ?, Data = ? WHERE Id = ?`;
+    const sql = `UPDATE Transacao 
+             SET Nome = ?, TipoTransacaoId = ?, CategoriaId = ?, MeioPagamentoId = ?, Valor = ?, Data = ? 
+             WHERE Id = ?`;
+
     const params = [nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data, id];
 
     db.run(sql, params, function (err) {
