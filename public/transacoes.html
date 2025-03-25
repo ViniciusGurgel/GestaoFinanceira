@@ -27,96 +27,7 @@
     <!-- Custom JS -->
     <script src="js/transacoes.js" defer></script>
 
-    <style>
-        /* Tema Claro */
-        body.light-theme {
-            background-color: #ffffff;
-            color: #000000;
-        }
 
-        .card.light-theme {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-        }
-
-        .table.light-theme {
-            background-color: #ffffff;
-            color: #000000;
-        }
-
-        .table-hover.light-theme tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .btn-primary.light-theme {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        /* Tema Escuro */
-        body.dark-theme {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-
-        .card.dark-theme {
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-        }
-
-        .table.dark-theme {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-        }
-
-        .table-hover.dark-theme tbody tr:hover {
-            background-color: #333;
-        }
-
-        .btn-primary.dark-theme {
-            background-color: #6759c3;
-            border-color: #6759c3;
-        }
-
-        .btn-primary.dark-theme:hover {
-            background-color: #5748a8;
-            border-color: #5748a8;
-        }
-
-        .btn-outline-secondary.dark-theme {
-            color: #e0e0e0;
-            border-color: #575757;
-        }
-
-        .btn-outline-secondary.dark-theme:hover {
-            background-color: #575757;
-            color: #fff;
-        }
-
-        .nav-tabs .nav-link.dark-theme {
-            color: #e0e0e0;
-        }
-
-        .nav-tabs .nav-link.active.dark-theme {
-            background-color: #6759c3;
-            color: #fff;
-        }
-
-        .valor-receita {
-            color: #4caf50; /* Verde para receitas */
-        }
-
-        .valor-despesa {
-            color: #f44336; /* Vermelho para despesas */
-        }
-
-        .theme-toggle-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-    </style>
 </head>
 
 <body class="light-theme">
@@ -124,11 +35,13 @@
         <button id="toggleTheme" class="btn btn-secondary">🌙 Tema Escuro</button>
     </div>
 
+    
+
     <div class="page d-flex">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header text-center">
-                <img src="img/usuario.jpg" alt="Foto de Perfil" class="profile-image">
+                <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover;">
                 <h6 class="user-name">Humberto</h6>
                 <p class="user-description">Gestão Financeira</p>
             </div>
@@ -171,7 +84,8 @@
                         </ul>
                     </div>
                     <div class="card-body">
-                        <div class="filter-container">
+                        <!-- Filtros -->
+                        <div class="filter-container mb-4">
                             <button class="btn btn-outline-secondary" id="clear-filters">Limpar </button>
                             <select class="form-select" id="filter-month">
                                 <option value="">Selecione o mês</option>
@@ -197,12 +111,8 @@
                                 <i class="bi bi-funnel"></i> 
                             </button>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Tabela de Transações -->
-                <div class="card">
-                    <div class="card-body">
+                        <!-- Tabela de Transações -->
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered">
                                 <thead class="thead-light">
@@ -215,6 +125,26 @@
                                     </tr>
                                 </thead>
                                 <tbody id="transacoes-lista">
+                                    <tr>
+                                        <td>Despesa</td>
+                                        <td>Alimentação</td>
+                                        <td class="valor-despesa">R$ 150,00</td>
+                                        <td>2024-01-15</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-edit"><i class="bi bi-pencil"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-delete"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Receita</td>
+                                        <td>Salário</td>
+                                        <td class="valor-receita">R$ 3000,00</td>
+                                        <td>2024-02-20</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-edit"><i class="bi bi-pencil"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-delete"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -262,7 +192,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary" form="transactionForm">Adicionar</button>
+                <button type="submit" class="btn btn-primary" form="transactionForm" id="addTransactionButton">Adicionar</button>
             </div>
         </div>
     </div>

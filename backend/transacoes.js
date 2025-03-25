@@ -4,12 +4,13 @@ const path = require('path');
 const db = require('./database/sqliteConnection');
 
 // Rota para obter todas as transações
-router.get('/transacoes', (req, res) => {
+router.get('/listar_transacoes', (req, res) => {
     db.all(`SELECT Transacao.Id, Transacao.Nome, TipoTransacao.Nome AS Tipo, Categoria.Nome AS Categoria, MeioPagamento.Nome AS MeioPagamento, Transacao.Valor, Transacao.Data 
             FROM Transacao
             JOIN TipoTransacao ON Transacao.TipoTransacaoId = TipoTransacao.Id
             JOIN Categoria ON Transacao.CategoriaId = Categoria.Id
-            JOIN MeioPagamento ON Transacao.MeioPagamentoId = MeioPagamento.Id`, 
+            JOIN MeioPagamento ON Transacao.MeioPagamentoId = MeioPagamento.Id
+            ORDER BY Transacao.Data DESC`,
     [], (err, rows) => {
         if (err) {
             console.error("Erro ao buscar transações:", err);
@@ -20,15 +21,15 @@ router.get('/transacoes', (req, res) => {
 });
 
 // Rota para adicionar uma nova transação
-router.post('/transacoes', (req, res) => {
-    const { nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data } = req.body;
-
-    if (!nome || !tipoTransacaoId || !categoriaId || !meioPagamentoId || !valor || !data) {
+router.post('/adicionar_transacao', (req, res) => {
+    const { nome, tipoTransacaoId, meioPagamentoId,categoria, valor, data } = req.body;
+    console.log(req.body);
+    if (!nome || !tipoTransacaoId || !categoria || !meioPagamentoId || !valor || !data) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
 
     const sql = `INSERT INTO Transacao (Nome, TipoTransacaoId, CategoriaId, MeioPagamentoId, Valor, Data) VALUES (?, ?, ?, ?, ?, ?)`;
-    const params = [nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data];
+    const params = [nome, tipoTransacaoId, categoria, meioPagamentoId, valor, data];
 
     db.run(sql, params, function (err) {
         if (err) {
@@ -40,7 +41,7 @@ router.post('/transacoes', (req, res) => {
 });
 
 // Rota para deletar uma transação
-router.delete('/transacoes/:id', (req, res) => {
+router.delete('/deletar_transacao/:id', (req, res) => {
     const { id } = req.params;
 
     db.run(`DELETE FROM Transacao WHERE Id = ?`, [id], function (err) {
@@ -53,7 +54,7 @@ router.delete('/transacoes/:id', (req, res) => {
 });
 
 // Rota para editar uma transação
-router.put('/transacoes/:id', (req, res) => {
+router.put('/alterar_transacao/:id', (req, res) => {
     const { id } = req.params;
     const { nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data } = req.body;
 
@@ -61,7 +62,7 @@ router.put('/transacoes/:id', (req, res) => {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
 
-    const sql = `UPDATE Transacao SET Nome = ?, TipoTransacaoId = ?, CategoriaId = ?, MeioPagamentoId = ?, Valor = ?, Data = ? WHERE Id = ?`;
+    const sql = `UPDATE Transacao SET TipoTransacaoId = ?, CategoriaId = ?, Valor = ?, Data = ? WHERE Id = ?`;
     const params = [nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data, id];
 
     db.run(sql, params, function (err) {

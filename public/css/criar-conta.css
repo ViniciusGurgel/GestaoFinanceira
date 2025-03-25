@@ -1,0 +1,85 @@
+/* Fundo com gradiente e textura */
+body {
+    background: linear-gradient(135deg, #6759c3, #000000);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Estrutura do card */
+.card-container {
+    width: 100%;
+    display: flex;
+    border-radius: 20px;
+    flex-direction: row;
+    overflow: hidden;
+    justify-content: space-around;
+}
+/* Estilização da imagem */
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    padding: 20px;
+    flex-direction: column;
+}
+
+.image-container img {
+    width: auto;
+    max-width: 40rem;
+    border-radius: 10px;
+}
+
+/* Estilização do formulário */
+.form-container {
+    padding: 30px;
+    background-color: #fff;
+    color: #000;
+    border-radius: 20px; /* Arredondamento do formulário */
+}
+
+.card {
+    border: none;
+}
+
+.card-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    width: 100%;
+    background-color: #6759c3;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #4e3c8d;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card-container {
+        flex-direction: column;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .image-container {
+        display: none; /* Esconde a imagem em telas menores */
+    }
+}

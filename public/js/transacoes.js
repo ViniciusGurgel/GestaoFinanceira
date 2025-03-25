@@ -1,8 +1,8 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+
     // Alternar entre tema claro e escuro
     const toggleThemeButton = document.getElementById("toggleTheme");
-    const body = document.body;
-
+    const body = document.body;      
     toggleThemeButton.addEventListener("click", () => {
         if (body.classList.contains("light-theme")) {
             body.classList.remove("light-theme");
@@ -13,48 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
             body.classList.add("light-theme");
             toggleThemeButton.textContent = "🌙 Tema Escuro";
         }
-    });
-
-    // Lidar com a submissão do formulário de transação
-    const transactionForm = document.getElementById("transactionForm");
-    transactionForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        // Capturar valores do formulário
-        const tipo = document.getElementById("transactionType").value;
-        const categoria = document.getElementById("transactionCategory").value;
-        const valor = parseFloat(document.getElementById("transactionValue").value).toFixed(2);
-        const data = document.getElementById("transactionDate").value;
-
-        if (!categoria || isNaN(valor) || !data) {
-            alert("Por favor, preencha todos os campos corretamente.");
-            return;
-        }
-
-        // Criar uma nova linha na tabela de transações
-        const tabela = document.getElementById("transacoes-lista");
-        const novaLinha = document.createElement("tr");
-
-        novaLinha.innerHTML = `
-            <td>${tipo === "receita" ? "Receita" : "Despesa"}</td>
-            <td>${categoria}</td>
-            <td class="${tipo === "receita" ? "valor-receita" : "valor-despesa"}">R$ ${valor}</td>
-            <td>${data}</td>
-            <td>
-                <button class="btn btn-sm btn-primary"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-            </td>
-        `;
-
-        // Adiciona a linha à tabela
-        tabela.appendChild(novaLinha);
-
-        // Fechar o modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById("addTransactionModal"));
-        modal.hide();
-
-        // Resetar o formulário
-        transactionForm.reset();
     });
 
     // Definir filtros
@@ -87,119 +45,132 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // Exemplo de cálculo do saldo total
-    const saldoTotal = 2850; // Substitua pelo cálculo real
+    const saldoTotal = 2850;
     updateTotalBalance(saldoTotal);
-
-    // Recarregar abas Receitas e Despesas
-    document.querySelector('[href="#receitas"]').addEventListener("click", () => {
-        transacoesLista.innerHTML = `
-            <tr>
-                <td>Receita</td>
-                <td>Salário</td>
-                <td class="valor-receita">R$ 3000,00</td>
-                <td>2024-02-20</td>
-                <td>
-                    <button class="btn btn-sm btn-primary"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `;
-    });
-
-    document.querySelector('[href="#despesas"]').addEventListener("click", () => {
-        transacoesLista.innerHTML = `
-            <tr>
-                <td>Despesa</td>
-                <td>Alimentação</td>
-                <td class="valor-despesa">R$ 150,00</td>
-                <td>2024-01-15</td>
-                <td>
-                    <button class="btn btn-sm btn-primary"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `;
-    });
 
     // Mostrar o modal quando o botão é clicado
     const addTransactionModalButton = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#addTransactionModal"]');
+    const addTransactionModal = new bootstrap.Modal(document.getElementById("addTransactionModal"));
     addTransactionModalButton.addEventListener("click", () => {
-        const modal = new bootstrap.Modal(document.getElementById("addTransactionModal"));
-        modal.show();
+        addTransactionModal.show();
     });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-    const fetchTransacoes = () => {
-        fetch('/api/transacoes') 
-            .then(response => response.json())
-            .then(data => {
-                const transacoesLista = document.getElementById("transacoes-lista");
-                transacoesLista.innerHTML = '';
+    // Função para adicionar transação
+    const addTransactionButton = document.getElementById("addTransactionButton");
+    addTransactionButton.addEventListener("click", async (event) => {
+        event.preventDefault();
 
-                data.forEach(transacao => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${transacao.Tipo}</td>
-                        <td>${transacao.Categoria}</td>
-                        <td class="${transacao.Tipo === 'Receita' ? 'valor-receita' : 'valor-despesa'}">R$ ${parseFloat(transacao.Valor).toFixed(2)}</td>
-                        <td>${transacao.Data}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary btn-edit"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-danger btn-delete"><i class="bi bi-trash"></i></button>
-                        </td>
-                    `;
-                    transacoesLista.appendChild(row);
-                });
-            })
-            .catch(error => console.error("Error loading transactions:", error));
+        // Obter os dados do formulário
+        const tipo = document.getElementById("transactionType").value;
+        const categoria = document.getElementById("transactionCategory").value;
+        const valor = parseFloat(document.getElementById("transactionValue").value);
+        const data = document.getElementById("transactionDate").value;
+
+        if (!tipo || !categoria || isNaN(valor) || !data) {
+            alert("Por favor, preencha todos os campos.");
+            return;
+        }
+
+        const novaTransacao = {
+            nome: "Teste",
+            tipoTransacaoId: 1,
+            meioPagamentoId: 1,
+            categoria: 1,
+            valor: valor,
+            data: data
+        };
+
+        try {
+            // Enviar a transação para a API
+            const response = await fetch("/api/adicionar_transacao", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(novaTransacao)
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao adicionar transação.");
+            }
+
+            // Fechar o modal
+            addTransactionModal.hide();
+
+            // Atualizar a lista de transações
+            const transacoesAtualizadas = await fetchTransacoes();
+            renderizarTransacoes(transacoesAtualizadas);
+            alert("Transação adicionada com sucesso!");
+
+        } catch (error) {
+            console.error(error);
+            alert("Falha ao adicionar a transação.");
+        }
+    });
+
+    // Lista original de transações
+    const fetchTransacoes = async () => {
+        try {
+            const response = await fetch("/api/listar_transacoes");
+            if (!response.ok) throw new Error("Erro ao buscar transações");
+            const transacoes = await response.json();
+            return transacoes.map(transacao => ({
+                id: transacao.Id,
+                tipo: transacao.Tipo,
+                categoria: transacao.Categoria,
+                valor: `R$ ${parseFloat(transacao.Valor).toFixed(2)}`,
+                data: transacao.Data
+            }));
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
     };
 
-    fetchTransacoes();
-
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const transacoesLista = document.getElementById("transacoes-lista");
-
-    // Função para editar uma transação
-    const editarTransacao = (linha) => {
-        const tipo = linha.children[0].textContent.trim();
-        const categoria = linha.children[1].textContent.trim();
-        const valor = linha.children[2].textContent.trim().replace("R$ ", "").replace(",", ".");
-        const data = linha.children[3].textContent.trim();
-
-        // Preencher o modal com os dados da transação
-        document.getElementById("transactionType").value = tipo === "Receita" ? "receita" : "despesa";
-        document.getElementById("transactionCategory").value = categoria;
-        document.getElementById("transactionValue").value = parseFloat(valor);
-        document.getElementById("transactionDate").value = data;
-
-        // Abrir o modal
-        const modal = new bootstrap.Modal(document.getElementById("addTransactionModal"));
-        modal.show();
-
-        // Atualizar a transação ao salvar
-        const transactionForm = document.getElementById("transactionForm");
-        transactionForm.onsubmit = function (event) {
-            event.preventDefault();
-
-            linha.children[0].textContent = document.getElementById("transactionType").value === "receita" ? "Receita" : "Despesa";
-            linha.children[1].textContent = document.getElementById("transactionCategory").value;
-            linha.children[2].textContent = `R$ ${parseFloat(document.getElementById("transactionValue").value).toFixed(2)}`;
-            linha.children[3].textContent = document.getElementById("transactionDate").value;
-
-            modal.hide();
-            transactionForm.reset();
-        };
+    // Função para renderizar a lista de transações
+    const renderizarTransacoes = (transacoes) => {
+        transacoesLista.innerHTML = "";
+        transacoes.forEach((transacao) => {
+            const novaLinha = document.createElement("tr");
+            novaLinha.dataset.id = transacao.id;
+            novaLinha.innerHTML = `
+                <td>${transacao.tipo}</td>
+                <td>${transacao.categoria}</td>
+                <td class="${transacao.tipo === "Receita" ? "valor-receita" : "valor-despesa"}">${transacao.valor}</td>
+                <td>${transacao.data}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary btn-edit"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-danger btn-delete"><i class="bi bi-trash"></i></button>
+                </td>
+            `;
+            transacoesLista.appendChild(novaLinha);
+        });
     };
 
     // Função para excluir uma transação
-    const excluirTransacao = (linha) => {
-        if (confirm("Tem certeza de que deseja excluir esta transação?")) {
+    const excluirTransacao = async (linha) => {
+        const id = linha.dataset.id;
+        if (!confirm("Tem certeza de que deseja excluir esta transação?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/deletar_transacao/${id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao excluir transação.");
+            }
             linha.remove();
+            alert("Transação excluída com sucesso.");
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Falha ao excluir a transação.");
         }
     };
+
 
     // Adicionar eventos aos botões de editar e excluir
     transacoesLista.addEventListener("click", function (event) {
@@ -215,4 +186,62 @@ document.addEventListener("DOMContentLoaded", function () {
             excluirTransacao(linha);
         }
     });
+
+    // Inicializar com a lista original
+    const transacoesOriginais = await fetchTransacoes();
+    renderizarTransacoes(transacoesOriginais);
+
+    // Recarregar lista original ao clicar na aba "Todas"
+    document.querySelector('[href="#todas"]').addEventListener("click", () => {
+        renderizarTransacoes(transacoesOriginais);
+    });
+
+    // Recarregar lista de receitas
+    document.querySelector('[href="#receitas"]').addEventListener("click", () => {
+        const receitas = transacoesOriginais.filter((t) => t.tipo === "Receita");
+        renderizarTransacoes(receitas);
+    });
+
+    // Recarregar lista de despesas
+    document.querySelector('[href="#despesas"]').addEventListener("click", () => {
+        const despesas = transacoesOriginais.filter((t) => t.tipo === "Despesa");
+        renderizarTransacoes(despesas);
+    });
+
+    const modal = document.getElementById("addTransactionModal");
+
+    modal.addEventListener("hidden.bs.modal", function () {
+        // Remove manualmente o backdrop caso ele permaneça
+        const backdrop = document.querySelector(".modal-backdrop");
+        if (backdrop) {
+            backdrop.remove();
+        }
+        document.body.classList.remove("modal-open"); // Remove a classe que impede o scroll
+        document.body.style = ""; // Remove estilos inline adicionados pelo Bootstrap
+    });
+
+     // Obtém o caminho da URL atual
+     const currentPath = window.location.pathname;
+
+     // Obtém todos os itens de menu
+     const menuItems = document.querySelectorAll('.menu-link');
+ 
+     // Remove a classe "active" de todos os itens e desativa o link da página atual
+     menuItems.forEach(item => {
+         item.classList.remove('active');
+         item.removeAttribute('aria-current');
+         item.removeAttribute('tabindex');
+         item.style.pointerEvents = ''; // Reativa o link
+     });
+ 
+     // Adiciona a classe "active" ao item de menu que corresponde à página atual
+     menuItems.forEach(item => {
+         const href = item.getAttribute('href');
+         if (href && currentPath.endsWith(href)) {
+             item.classList.add('active');
+             item.setAttribute('aria-current', 'page'); // Indica que é a página atual
+             item.style.pointerEvents = 'none'; // Desativa o clique no link
+             item.setAttribute('tabindex', '-1'); // Remove o foco do link
+         }
+     });
 });
