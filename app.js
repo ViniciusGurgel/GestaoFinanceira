@@ -1,24 +1,32 @@
 const express = require('express');
 const path = require('path');
-const transacaoRouter  = require('./backend/transacoes.js')
-const authRouter = require('./backend/auth.js');
 
+// Conectar ao MongoDB
+require('./backend/database/db');
+
+const transacaoRouter = require('./backend/transacoes.js');
+const authRouter = require('./backend/auth.js');
 
 const app = express();
 const port = 5555;
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Definição de rotas
+app.use('/api', transacaoRouter);
+app.use('/auth', authRouter);
+
+// Servir arquivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rota principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'transacoes.html'));
 });
 
-app.use('/api', transacaoRouter);
-app.use('/auth', authRouter);
-
-
+// Iniciar o servidor
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor da API rodando em http://localhost:${port}`);
-  });
+  console.log(`🚀 Servidor rodando em http://localhost:${port}`);
+});

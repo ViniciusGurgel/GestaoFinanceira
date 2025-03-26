@@ -1,34 +1,29 @@
-document.getElementById("registerForm").addEventListener("submit", function (event) {
+document.getElementById("registerForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    // Captura os valores dos campos
-    let fullName = document.getElementById("fullName").value;
+    let nome = document.getElementById("fullName").value;
     let email = document.getElementById("email").value;
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+    let usuarioNome = document.getElementById("username").value;
+    let senha = document.getElementById("password").value;
+    let senhaConfirm = document.getElementById("passwordConfirm").value;
 
-    // Simula um processo de validação
-    if (fullName && email && username && password.length >= 6) {
-        alert("Conta criada com sucesso! Redirecionando para login...");
-        window.location.href = "login.html";
-    } else {
-        document.getElementById("errorMessage").style.display = "block";
+    try {
+        const response = await fetch("/auth/criar_conta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, email, usuarioNome, senha, senhaConfirm })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem("email", email);
+            alert("Código enviado! Verifique seu email.");
+            window.location.href = data.redirect;
+        } else {
+            alert(data.message.join("\n"));  // Exibir todos os erros
+        }
+    } catch (error) {
+        alert("Erro ao criar conta.");
+        console.error(error);
     }
-});
-document.getElementById('show-password').addEventListener('change', function () {
-    const passwordField = document.getElementById('Password');
-    const passwordConfirmField = document.getElementById('PasswordConfirm');
-
-    if (this.checked) {
-        passwordField.type = 'text';
-        passwordConfirmField.type = 'text';
-    } else {
-        passwordField.type = 'password';
-        passwordConfirmField.type = 'password';
-    }
-});
-
-document.getElementById("registerForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    window.location.href = "codigo-verificacao.html"; 
 });

@@ -1,131 +1,97 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const path = require('path');
 const { validateAndDisplay } = require('./validators/cadastroUsuario'); // Validadores personalizados
-const { code, enviarEmail } = require('./enviarEmail');
-const fs = require('fs');
+const { code, enviarEmail } = require('./utils/enviarEmail');
+const Usuario = require('./models/Usuario');
 
 const router = express.Router();
-
-const collectionName = 'Usuario';
-
 router.use(express.json());
 
-// Rota POST para criar um novo usuário (email, nome completo, nome de usuário, senha)
-router.post('/register', async (req, res) => {
+const verificationCodes = new Map();
+
+// Rota para criar conta e validar dados
+router.post('/criar_conta', async (req, res) => {
     try {
-        let cont = 0;
-        const usuario = req.body;
-        console.log('Dados recebidos:', usuario);
-        const message = [];
-        
-        // Validação de dados do usuário
-        const validator = await validateAndDisplay(usuario);
+        let { nome, email, usuarioNome, senha, senhaConfirm } = req.body;
+        let erros = [];
+
+        // 1️⃣ Validação dos dados com o validador externo
+        const validator = await validateAndDisplay({ nome, email, usuarioNome, senha, senhaConfirm });
         if (!validator.success) {
-            message.push(validator.errors);
-            cont += 1;
+            erros.push(validator.errors);
         }
 
-        // Verificação de e-mail duplicado
-        const emailExistente = await req.db.collection(collectionName).findOne({ Email: usuario.Email });
+        // 2️⃣ Verificação de e-mail duplicado
+        const emailExistente = await Usuario.findOne({ Email: email });
         if (emailExistente) {
-            cont += 1;
-            message.push('O e-mail já está registrado.');
+            erros.push('O e-mail já está registrado.');
         }
 
-        // Verificação de nome de usuário duplicado
-        const usernameExistente = await req.db.collection(collectionName).findOne({ UsuarioNome: usuario.UsuarioNome });
-        if (usernameExistente) {
-            cont += 1;
-            message.push('O nome de usuário já está registrado.');
+        // Se houver erros, retorna resposta com erro
+        if (erros.length > 0) {
+            return res.status(400).json({ message: erros });
         }
 
-        if (cont > 0) {
-            return res.status(400).json({ message: message });
-        }
-
-        // Criptografar a senha
+        // 4️⃣ Criptografar a senha antes de salvar
         const salt = await bcrypt.genSalt();
-        usuario.Senha = await bcrypt.hash(usuario.Senha, salt);
-        delete usuario.SenhaConfirm;
+        const senhaCriptografada = await bcrypt.hash(senha, salt);
 
-        // Define a role como 'user'
-        usuario.Admin = "0";
+        // 5️⃣ Gerar código de verificação
+        const codigoVerificacao = code();
+        verificationCodes.set(email, { nome, email, usuarioNome, senha: senhaCriptografada, codigo: codigoVerificacao });
 
-        if (req.session.registro) {
-            req.session.registro.destroy;
-        }
-
-        // Guarda o usuário e o código de confirmação na sessão
-        req.session.registro = { usuario: usuario, code: code() };
-
-        res.json({ redirect: '/register/ConfirmCode' });
-
-    } catch (err) {
-        console.error('Erro ao pegar os dados:', err);
-        res.status(500).json({ message: 'Erro interno ao coletar os dados' });
-    }
-});
-
-// Rota GET para a página de confirmação do código
-router.get('/register/ConfirmCode', (req, res) => {
-    if (!req.session.registro) {
-        res.redirect("/register");
-    } else {
-        const filePath = path.join(__dirname, '/public', 'ConfirmCode.html');
-        // Definindo as opções do e-mail
+        // 6️⃣ Enviar e-mail com o código
         const mailOptions = {
             from: 'ceubconecta@gmail.com',
-            to: req.usuario.Email,
-            subject: `Seu código de confirmação é ${req.registro.code}`,
-            text: 'Confira o código de confirmação.',
-            html: `<h1>Código: ${req.session.registro.code}</h1>`
+            to: email,
+            subject: 'Código de Verificação - Financify',
+            text: `Olá ${nome},\n\nSeu código de verificação é: ${codigoVerificacao}\n\nDigite esse código no site para concluir seu cadastro.`
         };
-        enviarEmail(mailOptions);
 
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            const tags = `<i><h4>Email enviado para: ${req.usuario.Email}</h4></i>`;
-            const modifiedData = data.replace('<!--aqui vai as tags trazidos do backend-->', tags);
-            res.send(modifiedData);
-        });
+        await enviarEmail(mailOptions);
+        res.json({ message: "Código de verificação enviado para o seu e-mail.", redirect: '/codigo-verificacao.html' });
+
+    } catch (err) {
+        console.error('Erro ao criar conta:', err);
+        res.status(500).json({ message: 'Erro interno ao criar conta' });
     }
 });
 
-// Rota POST para validar o código de confirmação
-router.post('/register/ConfirmCode', async (req, res) => {
+// Rota para verificar o código e criar a conta no banco
+router.post('/verificar_codigo', async (req, res) => {
+    const { email, codigoInserido } = req.body;
+
+    if (!email || !codigoInserido) {
+        return res.status(400).json({ error: "Preencha todos os campos corretamente." });
+    }
+
+    // Verifica se o código está correto
+    const userData = verificationCodes.get(email);
+    if (!userData) {
+        return res.status(400).json({ error: "Código expirado ou inexistente." });
+    }
+
+    if (userData.codigo !== codigoInserido) {
+        return res.status(400).json({ error: "Código incorreto." });
+    }
+
     try {
-        const { num } = req.body;
-        console.log(req.session.registro.code);
-
-        if (num !== req.session.registro.code) {
-            return res.status(400).json({ message: "Código incorreto" });
-        }
-
-        const user = await req.db.collection(collectionName).findOne({ Email: req.session.registro.usuario.Email });
-        if (user) {
-            req.session.destroy(err => {
-                if (err) {
-                    return res.status(401).json({ message: "Erro ao destruir a sessão:", err });
-                }
-            });
-            return res.status(400).json({ message: 'Usuário já registrado.' });
-        }
-
-        // Inserir o novo usuário no banco de dados
-        await req.db.collection(collectionName).insertOne(req.session.registro.usuario);
-
-        req.session.destroy(err => {
-            if (err) {
-                return res.status(401).json({ message: "Erro ao destruir a sessão:", err });
-            }
+        const novoUsuario = new Usuario({
+            Nome: userData.nome,
+            Email: userData.email,
+            Usuario: userData.usuarioNome,
+            Senha: userData.senha
         });
 
-        // Resposta de redirecionamento para a página de login
-        res.json({ redirect: '/login' });
+        await novoUsuario.save();
+
+        // Remover código de verificação
+        verificationCodes.delete(email);
+        res.json({ message: "Conta criada com sucesso!" });
 
     } catch (err) {
-        console.error('Erro ao processar o código de confirmação:', err);
-        res.status(500).json({ message: 'Erro interno ao processar o código' });
+        console.error("Erro ao criar conta:", err);
+        res.status(500).json({ error: "Erro ao salvar no banco de dados." });
     }
 });
 
