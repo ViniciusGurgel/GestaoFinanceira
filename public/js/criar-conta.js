@@ -4,8 +4,8 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
     let nome = document.getElementById("fullName").value;
     let email = document.getElementById("email").value;
     let usuarioNome = document.getElementById("username").value;
-    let senha = document.getElementById("password").value;
-    let senhaConfirm = document.getElementById("passwordConfirm").value;
+    let senha = document.getElementById("Password").value;
+    let senhaConfirm = document.getElementById("PasswordConfirm").value;
 
     try {
         const response = await fetch("/auth/criar_conta", {
@@ -25,5 +25,18 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
     } catch (error) {
         alert("Erro ao criar conta.");
         console.error(error);
+    }
+});
+
+document.getElementById('show-password').addEventListener('change', function () {
+    const passwordField = document.getElementById('Password');
+    const passwordConfirmField = document.getElementById('PasswordConfirm');
+
+    if (this.checked) {
+        passwordField.type = 'text';
+        passwordConfirmField.type = 'text';
+    } else {
+        passwordField.type = 'password';
+        passwordConfirmField.type = 'password';
     }
 });

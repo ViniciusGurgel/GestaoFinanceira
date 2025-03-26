@@ -2,15 +2,19 @@ const inputs = document.querySelectorAll('.verification-code-input');
 
 inputs.forEach((input, index) => {
     input.addEventListener('input', (e) => {
-        if (e.target.value.length > 1) {
-            e.target.value = e.target.value.slice(0, 1);
+        // Limitar a entrada apenas a números
+        if (!/^\d$/.test(e.target.value)) {
+            e.target.value = '';  // Limpa o valor caso não seja numérico
         }
+
+        // Se o campo atual tiver 1 caractere, move o foco para o próximo campo
         if (e.target.value.length === 1 && index < inputs.length - 1) {
             inputs[index + 1].focus();
         }
     });
 
     input.addEventListener('keydown', (e) => {
+        // Se pressionar backspace, move o foco para o campo anterior
         if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) {
             inputs[index - 1].focus();
         }
@@ -25,14 +29,13 @@ document.getElementById('CodeConfirmForm').addEventListener('submit', async func
     const num4 = document.getElementById('num4').value;
     const num5 = document.getElementById('num5').value;
     const num6 = document.getElementById('num6').value;
-    const num = num1 + num2 + num3 + num4 + num5 + num6;
+    const codigoInserido = num1 + num2 + num3 + num4 + num5 + num6;
     
-    const data = { num };
-    
-    // console.log('Dados a serem enviados:', data);  // Adicione este log
+    const email = localStorage.getItem("email");
 
+    const data = {email,codigoInserido };
     
-    const response = await fetch('http://localhost:5555/registro/Codigo-verificacao', {
+    const response = await fetch('/auth/verificar_codigo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -44,11 +47,6 @@ document.getElementById('CodeConfirmForm').addEventListener('submit', async func
         window.location.href = responseData.redirect;
     } else {
         const errorData = await response.json();
-        alert('Erro ao cadastrar aluno: ' + errorData.message);
+        alert('Erro ao cadastrar Usuario: ' + errorData.message);
     }
-});
-
-document.getElementById("CodeConfirmForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    window.location.href = "login.html"; 
 });

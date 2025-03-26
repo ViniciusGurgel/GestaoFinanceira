@@ -1,3 +1,27 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        window.location.href = "login.html";
+    }
+    fetch('/api/verificar_token', {
+        method: 'GET',
+        headers: {
+            'x-auth-token': token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            window.location.href = "login.html";
+        }
+    })
+    .catch(err => {
+        console.error("Erro ao verificar o token:", err);
+        window.location.href = "login.html";
+    });
+});
+
+
 document.addEventListener("DOMContentLoaded", async function () {
 
     // Alternar entre tema claro e escuro

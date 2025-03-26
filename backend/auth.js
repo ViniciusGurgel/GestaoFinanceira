@@ -1,13 +1,45 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { validateAndDisplay } = require('./validators/cadastroUsuario'); // Validadores personalizados
 const { code, enviarEmail } = require('./utils/enviarEmail');
 const Usuario = require('./models/Usuario');
+const UsuarioVerification = require('./models/UsuarioVerification');
 
 const router = express.Router();
 router.use(express.json());
 
 const verificationCodes = new Map();
+
+//Rota pra fazer login
+router.post('/login', async (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ error: "Por favor, forneça o email e a senha." });
+    }
+
+    try {
+        const usuario = await Usuario.findOne({ Email: email });
+        if (!usuario) {
+            return res.status(400).json({ error: "Usuário não encontrado." });
+        }
+        const senhaCorreta = await bcrypt.compare(senha, usuario.Senha);
+        if (!senhaCorreta) {
+            return res.status(400).json({ error: "Senha incorreta." });
+        }
+
+
+        const token = jwt.sign({ userId: usuario._id, email: usuario.Email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Retornar o token JWT
+        res.json({ token });
+
+    } catch (err) {
+        console.error("Erro ao fazer login:", err);
+        res.status(500).json({ error: "Erro interno ao fazer login." });
+    }
+});
 
 // Rota para criar conta e validar dados
 router.post('/criar_conta', async (req, res) => {
@@ -60,7 +92,7 @@ router.post('/criar_conta', async (req, res) => {
 // Rota para verificar o código e criar a conta no banco
 router.post('/verificar_codigo', async (req, res) => {
     const { email, codigoInserido } = req.body;
-
+    console.log(req.body);
     if (!email || !codigoInserido) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
@@ -87,7 +119,7 @@ router.post('/verificar_codigo', async (req, res) => {
 
         // Remover código de verificação
         verificationCodes.delete(email);
-        res.json({ message: "Conta criada com sucesso!" });
+        res.json({ message: "Conta criada com sucesso!", redirect: "/login.html" });
 
     } catch (err) {
         console.error("Erro ao criar conta:", err);

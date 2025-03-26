@@ -3,13 +3,13 @@ const Joi = require('joi');
 // valida o dominio do email
 const emailValidator = Joi.string().email().custom((value, helpers) => {
     if (!value.endsWith('@gmail.com')) {
-        return helpers.message('O e-mail deve ter o domínio @sempreceub.com');
+        return helpers.message('O e-mail deve ter o domínio @gmail.com');
     }
     return value;
 });
 
 const schema = Joi.object({
-    Name: Joi.string()
+    nome: Joi.string()
         .min(7)
         .max(70)
         .required()
@@ -20,7 +20,7 @@ const schema = Joi.object({
             'any.required': "O nome completo é obrigatório para o registro"
         }),
 
-    Username: Joi.string()
+    usuarioNome: Joi.string()
         .alphanum()
         .min(3)
         .max(50)
@@ -32,13 +32,13 @@ const schema = Joi.object({
             'any.required': "O nome de usuário é obrigatório para o registro"
         }),
 
-    Email: emailValidator.required()
+    email: emailValidator.required()
         .messages({
             'string.empty': 'O e-mail deve ser preenchido',
             'any.required': "O e-mail é obrigatório para o registro"
         }),
 
-    Password: Joi.string()
+    senha: Joi.string()
         .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{3,30}$/)
         .required()
         .messages({
@@ -48,15 +48,15 @@ const schema = Joi.object({
             
         }),
 
-    PasswordConfirm: Joi.string()
+    senhaConfirm: Joi.string()
         .required()
-        .valid(Joi.ref('Password'))
+        .valid(Joi.ref('senha'))
         .messages({
             'any.only': 'As senhas devem ser iguais',
             'string.empty': 'A confirmação da senha deve ser preenchida',
             'any.required': "A senha de confirmação é obrigatória para o registro"
         })
-}).with('Password', 'PasswordConfirm');
+}).with('senha', 'senhaConfirm');
 
 
 const validateAndDisplay = async (body) => {

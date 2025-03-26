@@ -3,9 +3,11 @@ const path = require('path');
 
 // Conectar ao MongoDB
 require('./backend/database/db');
+require('dotenv').config();
 
 const transacaoRouter = require('./backend/transacoes.js');
 const authRouter = require('./backend/auth.js');
+const { verificarToken } = require('./backend/middleware/auth');
 
 const app = express();
 const port = 5555;

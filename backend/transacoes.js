@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
+const { verificarToken } = require('./middleware/auth');
 const db = require('./database/sqliteConnection');
+
+router.get('/verificar_token', verificarToken, (req, res) => {
+    console.log(req.user);
+    res.json({ message: 'Token verificado com sucesso!' });
+});
 
 // Rota para obter todas as transações
 router.get('/listar_transacoes', (req, res) => {
