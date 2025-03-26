@@ -105,8 +105,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!response.ok) {
                     throw new Error("Erro ao atualizar a transação.");
                 }
-        
+                
                 alert("Transação atualizada com sucesso!");
+                location.reload();
             } else {
                 // Adicionando nova transação
                 response = await fetch("/api/adicionar_transacao", {
@@ -122,6 +123,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
         
                 alert("Transação adicionada com sucesso!");
+                location.reload();
             }
         
             // Fechar o modal e resetar o botão
@@ -197,6 +199,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
             linha.remove();
             alert("Transação excluída com sucesso.");
+            location.reload();
         } catch (error) {
             console.error("Erro:", error);
             alert("Falha ao excluir a transação.");
