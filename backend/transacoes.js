@@ -3,6 +3,7 @@ const router = express.Router();
 const { verificarToken } = require('./middleware/auth');
 const db = require('./database/sqliteConnection');
 
+
 router.get('/verificar_token', verificarToken, (req, res) => {
     console.log(req.user);
     res.json({ message: 'Token verificado com sucesso!' });

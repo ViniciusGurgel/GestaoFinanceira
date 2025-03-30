@@ -1,0 +1,38 @@
+
+
+.sidebar {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    flex-grow: 1;
+    width: calc(100% - 260px);
+    background-color: white;
+    overflow: hidden;
+}
+
+h1 {
+    margin-top: 0;
+    padding-top: 10px;
+    text-align: center;
+}
+
+.container {
+    padding: 0 20px;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+
+

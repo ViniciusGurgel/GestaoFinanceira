@@ -1,0 +1,35 @@
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden; /* Remove o scroll horizontal */
+}
+
+/* Tema escuro */
+.dark-mode {
+    background-color: #222;
+    color: #fff;
+}
+
+/* Cartões */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%; /* Garante que os cards não ultrapassem a largura da tela */
+    margin: 0 auto; /* Centraliza os cards */
+}
+
+/* Botão de alternância de tema */
+.dark-mode .btn-primary {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+/* Garante que o conteúdo principal não ultrapasse a largura da viewport */
+.main-content {
+    max-width: 100%; /* Garante que o conteúdo não ultrapasse a largura da tela */
+    padding: 15px; /* Adiciona espaçamento interno */
+    box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+}
+
