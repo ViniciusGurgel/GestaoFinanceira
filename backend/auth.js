@@ -93,7 +93,6 @@ router.post('/criar_conta', async (req, res) => {
 // Rota para verificar o código e criar a conta no banco
 router.post('/verificar_codigo', async (req, res) => {
     const { email, codigoInserido } = req.body;
-    console.log(req.body);
     if (!email || !codigoInserido) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
