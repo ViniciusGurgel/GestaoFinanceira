@@ -6,6 +6,14 @@ body {
     overflow-x: hidden; /* Remove o scroll horizontal */
 }
 
+/* Estilos para o conteúdo principal */
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    flex-grow: 1;
+    width: calc(100% - 260px);
+    background-color: white;
+}
 /* Tema escuro */
 .dark-mode {
     background-color: #222;
@@ -17,6 +25,18 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 100%; /* Garante que os cards não ultrapassem a largura da tela */
     margin: 0 auto; /* Centraliza os cards */
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card h5 {
+    color: #6c757d; /* Cor dos ícones */
+}
+
+.card p {
+    font-size: 16px;
+    color: #6c757d; /* Cor do texto */
 }
 
 /* Botão de alternância de tema */
@@ -33,3 +53,29 @@ body {
     box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
 }
 
+.modal-header-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Tema Escuro */
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-theme .card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Tema Claro */
+.light-theme {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.light-theme .card {
+    background-color: #f8f9fa;
+    color: #000000;
+}

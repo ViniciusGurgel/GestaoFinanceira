@@ -1,4 +1,5 @@
 
+/*
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -130,4 +131,4 @@ router.post('/verificar_codigo', async (req, res) => {
 module.exports = router;
 
 
-
+*/

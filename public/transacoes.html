@@ -154,29 +154,35 @@
             <div class="modal-body">
                 <form id="transactionForm">
                     <div class="mb-3">
-                        <label for="transactionType" class="form-label">Tipo</label>
-                        <select class="form-select" id="transactionType" required>
+                        <label for="transactionType" class="form-label">Tipo de Transação</label>
+                        <select id="transactionType" class="form-select" required>
                             <option value="receita">Receita</option>
                             <option value="despesa">Despesa</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="transactionCategory" class="form-label">Categoria</label>
-                        <input type="text" class="form-control" id="transactionCategory" required>
+                        <select id="transactionCategory" class="form-select" required>
+                            <option value="alimentacao">Alimentação</option>
+                            <option value="transporte">Transporte</option>
+                            <option value="lazer">Lazer</option>
+                            <option value="educacao">Educação</option>
+                            <option value="saude">Saúde</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="transactionValue" class="form-label">Valor</label>
-                        <input type="number" class="form-control" id="transactionValue" step="0.01" required>
+                        <input type="number" id="transactionValue" class="form-control" placeholder="Digite o valor" required>
                     </div>
                     <div class="mb-3">
                         <label for="transactionDate" class="form-label">Data</label>
-                        <input type="date" class="form-control" id="transactionDate" required>
+                        <input type="date" id="transactionDate" class="form-control" required>
                     </div>
+                    <button type="submit" id="addTransactionButton" class="btn btn-primary">Adicionar Transação</button>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary" form="transactionForm" id="addTransactionButton">Adicionar</button>
             </div>
         </div>
     </div>

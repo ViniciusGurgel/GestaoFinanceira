@@ -1,3 +1,4 @@
+/*
 const mongoose = require('mongoose');
 
 const usuarioVerificationSchema = new mongoose.Schema({
@@ -9,3 +10,4 @@ const usuarioVerificationSchema = new mongoose.Schema({
 const UsuarioVerification = mongoose.model('UsuarioVerification', usuarioVerificationSchema);
 
 module.exports = UsuarioVerification;
+*/

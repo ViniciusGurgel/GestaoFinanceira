@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+/*document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Erro ao verificar o token:", err);
         window.location.href = "login.html";
     });
-});
+});*/
 
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -90,12 +90,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Função para adicionar transação
     const addTransactionButton = document.getElementById("addTransactionButton");
+    const transactionCategorySelect = document.getElementById("transactionCategory");
+
     addTransactionButton.addEventListener("click", async (event) => {
         event.preventDefault();
 
         // Obter os dados do formulário
         const tipo = document.getElementById("transactionType").value;
-        const categoria = document.getElementById("transactionCategory").value;
+        const categoria = transactionCategorySelect.value; // Obtém o valor selecionado no select
         const valor = parseFloat(document.getElementById("transactionValue").value);
         const data = document.getElementById("transactionDate").value;
 
@@ -108,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             nome: "Teste",
             tipoTransacaoId: tipo === "receita" ? 1 : 2,
             meioPagamentoId: 1,
-            categoriaId: 1,
+            categoriaId: categoria, // Envia o valor selecionado no select
             valor: valor,
             data: data
         };
