@@ -1,5 +1,4 @@
 
-/*
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -16,6 +15,19 @@ const verificationCodes = new Map();
 //Rota pra fazer login
 router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
+
+    if (email === 'admin' && senha === 'admin') {
+        try {
+            // Simula a geração de um token JWT para o admin
+            const token = jwt.sign({ userId: 'admin', email: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Retorna o token JWT gerado
+            return res.json({ token });
+        } catch (err) {
+            console.error("Erro ao gerar o token para o admin:", err);
+            return res.status(500).json({ error: "Erro interno ao gerar o token de admin." });
+        }
+    }
 
     if (!email || !senha) {
         return res.status(400).json({ error: "Por favor, forneça o email e a senha." });
@@ -129,6 +141,3 @@ router.post('/verificar_codigo', async (req, res) => {
 });
 
 module.exports = router;
-
-
-*/

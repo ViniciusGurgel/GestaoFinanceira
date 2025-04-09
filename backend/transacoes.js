@@ -1,4 +1,3 @@
-/*
 const express = require('express');
 const router = express.Router();
 const { verificarToken } = require('./middleware/auth');
@@ -86,7 +85,3 @@ router.put('/alterar_transacao/:id', (req, res) => {
 });
 
 module.exports = router;
-
-
-
-*/

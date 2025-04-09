@@ -1,4 +1,3 @@
-/*
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
@@ -19,4 +18,3 @@ const verificarToken = (req, res, next) => {
 };
 
 module.exports = { verificarToken };
-*/

@@ -8,7 +8,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     // Exibindo a mensagem de erro ao ocultá-la primeiro
     errorMessage.style.display = 'none';
-
+    
     try {
         const response = await fetch('/auth/login', {
             method: 'POST',
