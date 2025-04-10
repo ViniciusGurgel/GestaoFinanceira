@@ -9,13 +9,11 @@ router.use(conectarSQLitePorUsuario);
 
 // Rota para verificar o token
 router.get('/verificar_token', (req, res) => {
-    console.log('✅ Rota /as acessada');
     res.json({ message: 'Token verificado com sucesso!' });
 });
 
 // Rota para obter todas as transações
 router.get('/listar_transacoes', (req, res) => {
-    console.log('✅ Rota /listar_transacoes acessada');
     const db = req.db;
 
     db.all(`
