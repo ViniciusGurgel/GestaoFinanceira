@@ -22,6 +22,23 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+// Função auxiliar para chamadas autenticadas
+async function fetchComToken(url, options = {}) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("Token não encontrado.");
+    }
+
+    const headers = {
+        ...options.headers,
+        "x-auth-token": token,
+        "Content-Type": "application/json"
+    };
+
+    return fetch(url, { ...options, headers });
+}
+
+
 document.addEventListener("DOMContentLoaded", async function () {
 
     // Alternar entre tema claro e escuro
@@ -119,38 +136,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             let response;
             const id = addTransactionButton.dataset.editingId;
             if (id) {
-                // Editando transação existente
-                response = await fetch(`/api/alterar_transacao/${id}`, {
+                // Editar
+                response = await fetchComToken(`/api/alterar_transacao/${id}`, {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify(novaTransacao)
                 });
-        
-                if (!response.ok) {
-                    throw new Error("Erro ao atualizar a transação.");
-                }
-                
-                alert("Transação atualizada com sucesso!");
-                location.reload();
             } else {
-                // Adicionando nova transação
-                response = await fetch("/api/adicionar_transacao", {
+                // Adicionar
+                response = await fetchComToken("/api/adicionar_transacao", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify(novaTransacao)
                 });
-        
-                if (!response.ok) {
-                    throw new Error("Erro ao adicionar transação.");
-                }
-        
-                alert("Transação adicionada com sucesso!");
-                location.reload();
             }
+            window.location.reload();
         
             // Fechar o modal e resetar o botão
             addTransactionModal.hide();
@@ -170,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Lista original de transações
     const fetchTransacoes = async () => {
         try {
-            const response = await fetch("/api/listar_transacoes");
+            const response = await fetchComToken("/api/listar_transacoes");
             if (!response.ok) throw new Error("Erro ao buscar transações");
             const transacoes = await response.json();
             return transacoes.map(transacao => ({
@@ -215,9 +213,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         try {
-            const response = await fetch(`/api/deletar_transacao/${id}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" }
+            const response = await fetchComToken(`/api/deletar_transacao/${id}`, {
+                method: "DELETE"
             });
 
             if (!response.ok) {

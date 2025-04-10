@@ -1,23 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const { verificarToken } = require('./middleware/auth');
-const db = require('./database/sqliteConnection');
+const { conectarSQLitePorUsuario } = require('./middleware/sqliteMiddleware');
 
+// Aplica os middlewares a todas as rotas abaixo
+router.use(verificarToken);
+router.use(conectarSQLitePorUsuario);
 
-router.get('/verificar_token', verificarToken, (req, res) => {
-    console.log(req.user);
+// Rota para verificar o token
+router.get('/verificar_token', (req, res) => {
+    console.log('✅ Rota /as acessada');
     res.json({ message: 'Token verificado com sucesso!' });
 });
 
 // Rota para obter todas as transações
 router.get('/listar_transacoes', (req, res) => {
-    db.all(`SELECT Transacao.Id, Transacao.Nome, TipoTransacao.Nome AS Tipo, Categoria.Nome AS Categoria, MeioPagamento.Nome AS MeioPagamento, Transacao.Valor, Transacao.Data 
-            FROM Transacao
-            JOIN TipoTransacao ON Transacao.TipoTransacaoId = TipoTransacao.Id
-            JOIN Categoria ON Transacao.CategoriaId = Categoria.Id
-            JOIN MeioPagamento ON Transacao.MeioPagamentoId = MeioPagamento.Id
-            ORDER BY Transacao.Data DESC`,
-    [], (err, rows) => {
+    console.log('✅ Rota /listar_transacoes acessada');
+    const db = req.db;
+
+    db.all(`
+        SELECT Transacao.Id, Transacao.Nome, 
+               TipoTransacao.Nome AS Tipo, 
+               Categoria.Nome AS Categoria, 
+               MeioPagamento.Nome AS MeioPagamento, 
+               Transacao.Valor, Transacao.Data 
+        FROM Transacao
+        JOIN TipoTransacao ON Transacao.TipoTransacaoId = TipoTransacao.Id
+        JOIN Categoria ON Transacao.CategoriaId = Categoria.Id
+        JOIN MeioPagamento ON Transacao.MeioPagamentoId = MeioPagamento.Id
+        ORDER BY Transacao.Data DESC
+    `, [], (err, rows) => {
         if (err) {
             console.error("Erro ao buscar transações:", err);
             return res.status(500).json({ error: "Erro ao buscar transações" });
@@ -28,12 +40,18 @@ router.get('/listar_transacoes', (req, res) => {
 
 // Rota para adicionar uma nova transação
 router.post('/adicionar_transacao', (req, res) => {
+    const db = req.db;
     const { nome, tipoTransacaoId, meioPagamentoId, categoriaId, valor, data } = req.body;
+
     if (!nome || !tipoTransacaoId || !categoriaId || !meioPagamentoId || !valor || !data) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
 
-    const sql = `INSERT INTO Transacao (Nome, TipoTransacaoId, CategoriaId, MeioPagamentoId, Valor, Data) VALUES (?, ?, ?, ?, ?, ?)`;
+    const sql = `
+        INSERT INTO Transacao 
+        (Nome, TipoTransacaoId, CategoriaId, MeioPagamentoId, Valor, Data) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
     const params = [nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data];
 
     db.run(sql, params, function (err) {
@@ -47,6 +65,7 @@ router.post('/adicionar_transacao', (req, res) => {
 
 // Rota para deletar uma transação
 router.delete('/deletar_transacao/:id', (req, res) => {
+    const db = req.db;
     const { id } = req.params;
 
     db.run(`DELETE FROM Transacao WHERE Id = ?`, [id], function (err) {
@@ -60,19 +79,19 @@ router.delete('/deletar_transacao/:id', (req, res) => {
 
 // Rota para editar uma transação
 router.put('/alterar_transacao/:id', (req, res) => {
+    const db = req.db;
     const { id } = req.params;
-    const {nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data } = req.body;
+    const { nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data } = req.body;
 
     if (!nome || !tipoTransacaoId || !categoriaId || !meioPagamentoId || !valor || !data) {
         return res.status(400).json({ error: "Preencha todos os campos corretamente." });
     }
-    console.log("Dados recebidos para atualização:", req.body);
-    console.log("ID recebido:", id);
 
-    const sql = `UPDATE Transacao 
-             SET Nome = ?, TipoTransacaoId = ?, CategoriaId = ?, MeioPagamentoId = ?, Valor = ?, Data = ? 
-             WHERE Id = ?`;
-
+    const sql = `
+        UPDATE Transacao 
+        SET Nome = ?, TipoTransacaoId = ?, CategoriaId = ?, MeioPagamentoId = ?, Valor = ?, Data = ? 
+        WHERE Id = ?
+    `;
     const params = [nome, tipoTransacaoId, categoriaId, meioPagamentoId, valor, data, id];
 
     db.run(sql, params, function (err) {

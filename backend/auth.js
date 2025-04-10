@@ -5,7 +5,9 @@ const jwt = require('jsonwebtoken');
 const { validateAndDisplay } = require('./validators/cadastroUsuario'); // Validadores personalizados
 const { code, enviarEmail } = require('./utils/enviarEmail');
 const Usuario = require('./models/Usuario');
-const UsuarioVerification = require('./models/UsuarioVerification');
+const { inicializarBancoUsuario } = require('./database/databaseInicializer');
+const { getUserDb } = require('./middleware/sqliteMiddleware');
+
 
 const router = express.Router();
 router.use(express.json());
@@ -20,6 +22,8 @@ router.post('/login', async (req, res) => {
         try {
             // Simula a geração de um token JWT para o admin
             const token = jwt.sign({ userId: 'admin', email: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const userDb = getUserDb('admin');
+            userDb.close();
 
             // Retorna o token JWT gerado
             return res.json({ token });
@@ -45,6 +49,9 @@ router.post('/login', async (req, res) => {
 
 
         const token = jwt.sign({ userId: usuario._id, email: usuario.Email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        const userDb = getUserDb(usuario._id);
+        userDb.close();
 
         // Retornar o token JWT
         res.json({ token });
@@ -129,6 +136,8 @@ router.post('/verificar_codigo', async (req, res) => {
         });
 
         await novoUsuario.save();
+
+        inicializarBancoUsuario(novoUsuario._id);
 
         // Remover código de verificação
         verificationCodes.delete(email);
