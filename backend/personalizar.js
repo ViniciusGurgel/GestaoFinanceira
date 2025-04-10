@@ -19,3 +19,51 @@ router.get('/listar_categorias', (req, res) => {
         res.json(rows);
     });
 });
+
+// Rota para deletar uma categoria
+router.delete('/deletar_categoria/:id', (req, res) => {
+    const db = req.db;
+    const { id } = req.params;
+
+    db.run(`DELETE FROM Categoria WHERE Id = ?`, [id], function (err) {
+        if (err) {
+            console.error("Erro ao excluir categoria:", err);
+            return res.status(500).json({ error: "Erro ao excluir categoria" });
+        }
+
+        if (this.changes === 0) {
+            return res.status(404).json({ error: "Categoria não encontrada." });
+        }
+
+        res.json({ message: "Categoria excluída com sucesso!" });
+    });
+});
+
+// Rota para alterar uma categoria
+router.put('/alterar_categoria/:id', (req, res) => {
+    const db = req.db;
+    const { id } = req.params;
+    const { nome } = req.body;
+
+    if (!nome) {
+        return res.status(400).json({ error: "O nome da categoria é obrigatório." });
+    }
+
+    const sql = `UPDATE Categoria SET Nome = ? WHERE Id = ?`;
+    const params = [nome, id];
+
+    db.run(sql, params, function (err) {
+        if (err) {
+            console.error("Erro ao editar categoria:", err);
+            return res.status(500).json({ error: "Erro ao editar categoria" });
+        }
+
+        if (this.changes === 0) {
+            return res.status(404).json({ error: "Categoria não encontrada ou nome já está em uso." });
+        }
+
+        res.json({ message: "Categoria atualizada com sucesso!" });
+    });
+});
+
+module.exports = router;

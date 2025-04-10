@@ -19,8 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Erro ao verificar o token:", err);
         window.location.href = "login.html";
     });
-});
 
+    carregarCategorias();
+});
 
 // Função auxiliar para chamadas autenticadas
 async function fetchComToken(url, options = {}) {
@@ -36,6 +37,38 @@ async function fetchComToken(url, options = {}) {
     };
 
     return fetch(url, { ...options, headers });
+}
+
+
+async function carregarCategorias() {
+    const token = localStorage.getItem('token');
+    const selectCategoria = document.getElementById("transactionCategory");
+
+    try {
+        const response = await fetchComToken("/personalizar/listar_categorias", {
+            method: "GET"
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar categorias.");
+        }
+
+        const categorias = await response.json();
+
+        // Limpar opções atuais
+        selectCategoria.innerHTML = '';
+
+        // Inserir categorias dinâmicas
+        categorias.forEach((categoria) => {
+            const option = document.createElement("option");
+            option.value = categoria.Id; // ou categoria.id
+            option.textContent = categoria.Nome; // ou categoria.nome
+            selectCategoria.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+    }
 }
 
 

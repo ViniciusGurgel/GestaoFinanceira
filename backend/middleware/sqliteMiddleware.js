@@ -31,7 +31,6 @@ function conectarSQLitePorUsuario(req, res, next) {
 
 function getUserDb(userId) {
     const dbPath = path.join(__dirname, '../database', `${userId}.db`);
-    console.log(dbPath);
     return new sqlite3.Database(dbPath);
 }
 
