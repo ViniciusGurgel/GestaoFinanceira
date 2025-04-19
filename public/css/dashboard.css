@@ -10,6 +10,12 @@ body, html {
     width: 100%;
 }
 
+
+body {
+    /*background: linear-gradient(135deg, #6759c3, #000000);*/
+    color: #fff;
+}
+
 .sidebar {
     width: 250px;
     background-color: #6759c3;
@@ -157,6 +163,8 @@ body, html {
 
 .card {
     margin-bottom: 20px;
+    background-color: #ffffff;
+    color: #000;
 }
 
 @media (max-width: 767px) {

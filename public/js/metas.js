@@ -62,8 +62,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             </table>
 
                             <!-- Barra de progresso para o tempo restante -->
-                            <div class="progress-container mt-3" style="width: 100%; background-color: #f1f1f1; border-radius: 10px; overflow: hidden; height: 20px;">
-                                <div class="progress-bar" style="width: ${monthsProgress}%; height: 100%; background-color: #ffcc00; transition: width 1.5s ease-in-out;"></div>
+                            <div class="d-flex align-items-center mt-3">
+                                <i class="bi bi-alarm me-2"></i> <!-- Ícone ao lado esquerdo -->
+                                <div class="progress-container" style="width: 100%; background-color: #f1f1f1; border-radius: 10px; overflow: hidden; height: 20px;">
+                                    <div class="progress-bar" style="width: ${monthsProgress}%; height: 100%; background-color: #4caf50; transition: width 1.5s ease-in-out;"></div>
+                                </div>
                             </div>
                             <p class="mt-2">Tempo Restante: ${goal.monthsLeft} meses</p>
                         </div>

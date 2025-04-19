@@ -44,7 +44,17 @@
                 <li><a href="metas.html" class="menu-link"><i class="bi bi-flag"></i> Metas de Gastos</a></li>
                 <li><a href="relatorios.html" class="menu-link"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
                 <li><a href="personalizar.html" class="menu-link"><i class="bi bi-gear"></i> Personalizar</a></li>
-                <li><a href="#" class="menu-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                <li>
+                    <div class="d-flex flex-column align-items-center gap-3" style="position: absolute; bottom: 1rem; width: 100%; text-align: center; left: 0;">
+                        <button id="toggleThemeButton" class="btn d-flex align-items-center gap-2 justify-content-center w-75">
+                            <i id="themeIcon" class="bi"></i>
+                            <span id="themeText"></span>
+                        </button>
+                        <a href="#" class="menu-link d-flex align-items-center justify-content-center w-75" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
@@ -93,31 +103,10 @@
                             <button id="editUserButton" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Editar
                             </button>
-                            <!-- Card de Tema -->
-                        <div class="card text-center p-3 mt-4">
-                            <div class="d-flex align-items-center justify-content-center gap-3">
-                                <!-- Ícone e Texto -->
-                                <i class="bi bi-stars fs-3"></i>
-                                <div>
-                                    <p class="mb-0">Tema</p>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button id="darkThemeButton" class="btn btn-dark d-flex align-items-center gap-2">
-                                        <i class="bi bi-moon-stars"></i> Tema Escuro
-                                    </button>
-                                    <button id="lightThemeButton" class="btn btn-light d-flex align-items-center gap-2">
-                                        <i class="bi bi-sun"></i> Tema Claro
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                             <button id="saveUserButton" class="btn btn-success btn-sm" disabled>
                                 <i class="bi bi-check-circle"></i> Salvar
                             </button>
                         </div>
-
-                        
-                        
                     </div>
                 </div>
 
@@ -128,19 +117,14 @@
                         <h5><i class="bi bi-tags fs-3"></i></h5>
                         <p class="mt-2">Gerenciar Categorias</p>
                         <ul id="categoryList" class="list-group mb-2">
-                            <li class="list-group-item d-flex align-items-center justify-content-between">
+                            <li class="list-group-item d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#editCategoryModal" data-category-name="Alimentação" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <span class="category-color" style="width: 20px; height: 20px; background-color: #6c757d; border-radius: 50%; display: inline-block; margin-right: 10px;"></span>
                                     Alimentação
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-primary edit-category-btn" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger delete-category-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
+                                <button class="btn btn-sm btn-danger delete-category-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </li>
                         </ul>
                         
@@ -262,6 +246,57 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const categoryList = document.getElementById("categoryList");
+            const editCategoryNameInput = document.getElementById("editCategoryName");
+
+            categoryList.addEventListener("click", (event) => {
+                const listItem = event.target.closest(".list-group-item");
+                if (listItem && listItem.dataset.categoryName) {
+                    editCategoryNameInput.value = listItem.dataset.categoryName;
+                }
+            });
+        });
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const body = document.body;
+        const toggleButton = document.getElementById("toggleThemeButton");
+        const icon = document.getElementById("themeIcon");
+        const text = document.getElementById("themeText");
+
+        // Função para aplicar o tema
+        function applyTheme(theme) {
+            if (theme === "dark") {
+                body.classList.add("dark-theme");
+                icon.className = "bi bi-moon-stars";
+                text.textContent = "Tema Escuro";
+                toggleButton.style.backgroundColor = "#333"; // Cor escura para o tema escuro
+                toggleButton.style.color = "#fff";
+            } else {
+                body.classList.remove("dark-theme");
+                icon.className = "bi bi-sun";
+                text.textContent = "Tema Claro";
+                toggleButton.style.backgroundColor = "#f8f9fa"; // Cor clara para o tema claro
+                toggleButton.style.color = "#000";
+            }
+            localStorage.setItem("theme", theme);
+        }
+
+        // Aplica o tema salvo
+        const savedTheme = localStorage.getItem("theme") || "light";
+        applyTheme(savedTheme);
+
+        // Evento de clique para alternar tema
+        toggleButton.addEventListener("click", () => {
+            const currentTheme = body.classList.contains("dark-theme") ? "dark" : "light";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            applyTheme(newTheme);
+        });
+    });
+    </script>
 </body>
 
 </html>

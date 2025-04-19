@@ -35,18 +35,16 @@
 
 
 <body class="light-theme">
-    <div class="theme-toggle-btn">
-        <button id="toggleTheme" class="btn btn-secondary">🌙 Tema Escuro</button>
-    </div>
 
-    
 
     <div class="page d-flex">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header text-center">
-                <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover;">
-                <h6 class="user-name">Humberto</h6>
+                <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image" 
+                     style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; cursor: pointer;" 
+                     data-bs-toggle="modal" data-bs-target="#profileModal">
+                <h6 class="user-name">Lucas</h6>
                 <p class="user-description">Gestão Financeira</p>
             </div>
             <div class="sidebar-body">
@@ -56,7 +54,17 @@
                     <li><a href="metas.html" class="menu-link"><i class="bi bi-flag"></i> Metas de Gastos</a></li>
                     <li><a href="relatorios.html" class="menu-link"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
                     <li><a href="personalizar.html" class="menu-link"><i class="bi bi-gear"></i> Personalizar</a></li>
-                    <li><a href="#" class="menu-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    <li>
+                        <div class="d-flex flex-column align-items-center gap-3" style="position: absolute; bottom: 1rem; width: 100%; text-align: center; left: 0;">
+                            <button id="toggleThemeButton" class="btn d-flex align-items-center gap-2 justify-content-center w-75">
+                                <i id="themeIcon" class="bi"></i>
+                                <span id="themeText"></span>
+                            </button>
+                            <a href="#" class="menu-link d-flex align-items-center justify-content-center w-75" onclick="logout()">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -123,6 +131,7 @@
                             <table class="table table-hover table-bordered">
                                 <thead class="thead-light">
                                     <tr>
+                                        <th>Nome da Transação</th> <!-- Negrito removido -->
                                         <th>Tipo</th>
                                         <th>Categoria</th>
                                         <th>Valor</th>
@@ -131,8 +140,40 @@
                                     </tr>
                                 </thead>
                                 <tbody id="transacoes-lista">
-                                    <!--  Listas  -->
-                                </tbody>
+    <tr>
+        <td>Salário Mensal</td>
+        <td>Receita</td>
+        <td>Salário</td>
+        <td>R$ 5.000,00</td>
+        <td>2025-04-05</td>
+        <td>
+            <button class="btn btn-sm btn-warning">Editar</button>
+            <button class="btn btn-sm btn-danger">Excluir</button>
+        </td>
+    </tr>
+    <tr>
+        <td>Supermercado</td>
+        <td>Despesa</td>
+        <td>Alimentação</td>
+        <td>R$ 450,00</td>
+        <td>2025-04-06</td>
+        <td>
+            <button class="btn btn-sm btn-warning">Editar</button>
+            <button class="btn btn-sm btn-danger">Excluir</button>
+        </td>
+    </tr>
+    <tr>
+        <td>Mensalidade Academia</td>
+        <td>Despesa</td>
+        <td>Saúde</td>
+        <td>R$ 120,00</td>
+        <td>2025-04-07</td>
+        <td>
+            <button class="btn btn-sm btn-warning">Editar</button>
+            <button class="btn btn-sm btn-danger">Excluir</button>
+        </td>
+    </tr>
+</tbody>
                             </table>
                         </div>
                     </div>
@@ -157,6 +198,10 @@
             <div class="modal-body">
                 <form id="transactionForm">
                     <div class="mb-3">
+                        <label for="transactionName" class="form-label">Nome da Transação</label> <!-- Campo adicionado -->
+                        <input type="text" id="transactionName" class="form-control" placeholder="Digite o nome da transação" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="transactionType" class="form-label">Tipo de Transação</label>
                         <select id="transactionType" class="form-select" required>
                             <option value="receita">Receita</option>
@@ -177,11 +222,11 @@
                         <label for="transactionDate" class="form-label">Data</label>
                         <input type="date" id="transactionDate" class="form-control" required>
                     </div>
-                    <button type="submit" id="addTransactionButton" class="btn btn-primary">Adicionar Transação</button>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" id="addTransactionButton" class="btn btn-primary">Adicionar Transação</button>
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -189,6 +234,47 @@
 
     <!-- Saldo Total -->
     <div id="total-balance" class="positive">Saldo Total: R$ 2.850,00</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const body = document.body;
+    const toggleButton = document.getElementById("toggleThemeButton");
+    const icon = document.getElementById("themeIcon");
+    const text = document.getElementById("themeText");
+    const page = document.querySelector(".page");
+
+    // Função para aplicar o tema
+    function applyTheme(theme) {
+        if (theme === "dark") {
+            body.classList.add("dark-theme");
+            icon.className = "bi bi-moon-stars";
+            text.textContent = "Tema Escuro";
+            toggleButton.style.backgroundColor = "#333"; // Cor escura para o tema escuro
+            toggleButton.style.color = "#fff";
+            page.style.background = "linear-gradient(135deg, #0f2027, #203a43, #2c5364)";
+        } else {
+            body.classList.remove("dark-theme");
+            icon.className = "bi bi-sun";
+            text.textContent = "Tema Claro";
+            toggleButton.style.backgroundColor = "#f8f9fa"; // Cor clara para o tema claro
+            toggleButton.style.color = "#000";
+            page.style.background = "#fff";
+        }
+        localStorage.setItem("theme", theme);
+    }
+
+    // Aplica o tema salvo
+    const savedTheme = localStorage.getItem("theme") || "light";
+    applyTheme(savedTheme);
+
+    // Evento de clique para alternar tema
+    toggleButton.addEventListener("click", () => {
+        const currentTheme = body.classList.contains("dark-theme") ? "dark" : "light";
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        applyTheme(newTheme);
+    });
+});
+</script>
 
 </body>
 

@@ -20,7 +20,31 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
 
     <style>
+        .custom-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4d4d; /* Cor personalizada */
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
 
+        .custom-alert .btn-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -29,7 +53,13 @@
         <!-- Favicon -->
         <img src="img/favicon.png" alt="Logo">
 
-        
+        <div id="customAlert" class="custom-alert" style="display: none;">
+            <span id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="closeAlert()">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
         <form id="loginForm">
             <div class="form-group">
                 <label for="username">Nome de usuário</label>
@@ -60,6 +90,36 @@
 
     <!-- JS Customizado -->
     <script src="js/login.js"></script>
+
+    <script>
+        function showAlert(message) {
+            const alertBox = document.getElementById("customAlert");
+            const alertMessage = document.getElementById("alertMessage");
+            alertMessage.textContent = message;
+            alertBox.style.display = "flex";
+            setTimeout(() => {
+                alertBox.style.display = "none";
+            }, 3000); // Fecha automaticamente após 3 segundos
+        }
+
+        function closeAlert() {
+            document.getElementById("customAlert").style.display = "none";
+        }
+
+        // Exemplo de uso no formulário
+        document.getElementById("loginForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username !== "admin" || password !== "1234") {
+                showAlert("Usuário ou senha inválidos.");
+            } else {
+                // Redirecionar para outra página ou realizar outra ação
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
 </body>
 
 </html>

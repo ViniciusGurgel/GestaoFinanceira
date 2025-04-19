@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const transacoes = await response.json();
             return transacoes.map(transacao => ({
                 id: transacao.Id,
+                nome: transacao.Nome, // <-- aqui!
                 tipo: transacao.Tipo,
                 categoria: transacao.Categoria,
                 valor: `R$ ${parseFloat(transacao.Valor).toFixed(2)}`,
@@ -224,6 +225,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const novaLinha = document.createElement("tr");
             novaLinha.dataset.id = transacao.id;
             novaLinha.innerHTML = `
+                <td>${transacao.nome}</td>
                 <td>${transacao.tipo}</td>
                 <td>${transacao.categoria}</td>
                 <td class="${transacao.tipo === "Receita" ? "valor-receita" : "valor-despesa"}">${transacao.valor}</td>

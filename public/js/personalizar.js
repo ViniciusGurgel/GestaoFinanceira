@@ -263,7 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInputs = document.querySelectorAll("form input");
 
     // Bloqueia os campos inicialmente
-    userInputs.forEach(input => input.setAttribute("readonly", true));
+    userInputs.forEach(input => {
+        if (input.id !== "editCategoryName") { // Exclui o campo de categoria
+            input.setAttribute("readonly", true);
+        }
+    });
 
     // Habilita a edição ao clicar no botão "Editar" do card de usuário
     editUserButton.addEventListener("click", function () {
