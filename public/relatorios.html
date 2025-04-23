@@ -1,169 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório Financeiro</title>
-    <link rel="stylesheet" href="css/relatorios.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
-        integrity="sha384-MrcW6ZMFyB1V8V+U4KxogYtRI6wK6o2QnNJlX27Nu7MZlzT7nN6M7Il2e0F9zNs0" crossorigin="anonymous"></script>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/geral.js"></script>
-
-    <!-- Custom CSS -->
-    <link href="css/transacoes.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="img/favicon.png">
-
-</head>
-<body>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header text-center">
-            <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover;">
-            <h6 class="user-name">Raul</h6>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Relatório Financeiro</title>
+      <link rel="stylesheet" href="css/relatorios.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+      <!-- Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+         integrity="sha384-MrcW6ZMFyB1V8V+U4KxogYtRI6wK6o2QnNJlX27Nu7MZlzT7nN6M7Il2e0F9zNs0" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="js/geral.js"></script>
+      <!-- Custom CSS -->
+      <link href="css/relatorios.css" rel="stylesheet">
+      <link rel="icon" type="image/png" href="img/favicon.png">
+   </head>
+   <body>
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+         <div class="sidebar-header text-center">
+            <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image"
+               style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
+               data-bs-toggle="modal" data-bs-target="#profileModal">
+            <h6 class="user-name">Lucas</h6>
             <p class="user-description">Gestão Financeira</p>
-        </div>
-        <div class="sidebar-body">
+         </div>
+         <div class="sidebar-body">
             <ul class="menu">
-                <li><a href="dashboard.html" class="menu-link"><i class="bi bi-house-door"></i> Dashboard</a></li>
-                <li><a href="transacoes.html" class="menu-link"><i class="bi bi-cash-stack"></i> Transações</a></li>
-                <li><a href="metas.html" class="menu-link"><i class="bi bi-flag"></i> Metas de Gastos</a></li>
-                <li><a href="relatorios.html" class="menu-link"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
-                <li><a href="personalizar.html" class="menu-link"><i class="bi bi-gear"></i> Personalizar</a></li>
-                <li><a href="#" class="menu-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+               <li><a href="dashboard.html" class="menu-link"><i class="bi bi-house-door"></i> Dashboard</a></li>
+               <li><a href="transacoes.html" class="menu-link"><i class="bi bi-cash-stack"></i> Transações</a></li>
+               <li><a href="metas.html" class="menu-link"><i class="bi bi-flag"></i> Metas de Gastos</a></li>
+               <li><a href="relatorios.html" class="menu-link"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
+               <li><a href="personalizar.html" class="menu-link"><i class="bi bi-gear"></i> Personalizar</a></li>
+               <li>
+                  <div class="d-flex flex-column align-items-center gap-3"
+                     style="position: absolute; bottom: 1rem; width: 100%; text-align: center; left: 0;">
+                     <button id="toggleThemeButton"
+                        class="btn d-flex align-items-center gap-2 justify-content-center w-75">
+                     <i id="themeIcon" class="bi"></i>
+                     <span id="themeText"></span>
+                     </button>
+                     <a href="#" class="menu-link d-flex align-items-center justify-content-center w-75"
+                        onclick="logout()">
+                     <i class="bi bi-box-arrow-right"></i> Logout
+                     </a>
+                  </div>
+               </li>
             </ul>
-        </div>
-    </div>
-
-    <!-- Conteúdo principal -->
-    <div class="main-content container-fluid">
-        <h1 class="text-center mb-4">Relatório Financeiro</h1>
-
-        <!-- Síntese dos Dados -->
-        <div class="card mb-4">
+         </div>
+      </div>
+      <!-- Conteúdo principal -->
+      <div class="main-content container-fluid">
+         <h1 class="text-center mb-4">Relatório Financeiro</h1>
+         <!-- Síntese dos Dados -->
+         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="card-title text-center">Síntese dos Dados</h2>
-                <p class="text-center">Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:</p>
-                <ul class="list-group">
-                    <li class="list-group-item"><strong>Total de transações:</strong> 30 transações</li>
-                    <li class="list-group-item"><strong>Total gasto:</strong> R$ 3.500,00</li>
-                    <li class="list-group-item"><strong>Categoria com maior gasto:</strong> Alimentação</li>
-                    <li class="list-group-item"><strong>Data mais recente:</strong> 22/03/2025</li>
-                </ul>
+               <h2 class="card-title text-center">Síntese dos Dados</h2>
+               <p class="text-center">Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:</p>
+               <ul class="list-group">
+                  <li class="list-group-item"><strong>Total de transações:</strong> 30 transações</li>
+                  <li class="list-group-item"><strong>Total gasto:</strong> R$ 3.500,00</li>
+                  <li class="list-group-item"><strong>Categoria com maior gasto:</strong> Alimentação</li>
+                  <li class="list-group-item"><strong>Data mais recente:</strong> 22/03/2025</li>
+               </ul>
             </div>
-        </div>
-
-        <!-- Gráficos -->
-        <div class="row">
+         </div>
+         <!-- Gráficos -->
+         <div class="row">
             <!-- Gráfico de Barras -->
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        Gastos por Categoria
-                    </div>
-                    <div class="card-body">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
+               <div class="card">
+                  <div class="card-header">
+                     Gastos por Categoria
+                  </div>
+                  <div class="card-body">
+                     <canvas id="barChart"></canvas>
+                  </div>
+               </div>
             </div>
-
             <!-- Gráfico de Pizza -->
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        Distribuição de Gastos
-                    </div>
-                    <div class="card-body">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
+               <div class="card">
+                  <div class="card-header">
+                     Distribuição de Gastos
+                  </div>
+                  <div class="card-body">
+                     <canvas id="pieChart"></canvas>
+                  </div>
+               </div>
             </div>
-        </div>
-
-        <!-- Botão para Baixar Relatório -->
-        <div class="text-center mt-4">
+         </div>
+         <!-- Botão para Baixar Relatório -->
+         <div class="text-center mt-4">
             <button class="btn btn-primary" id="downloadBtn">Baixar Relatório em PDF</button>
-        </div>
-    </div>
-
-    <script>
-        // Inicialização dos gráficos
-        document.addEventListener("DOMContentLoaded", function () {
-            // Gráfico de Barras
-            const barChartCtx = document.getElementById('barChart').getContext('2d');
-            new Chart(barChartCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
-                    datasets: [{
-                        label: 'Gastos (R$)',
-                        data: [1500, 800, 500, 700],
-                        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
-                        borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                    },
-                }
-            });
-
-            // Gráfico de Pizza
-            const pieChartCtx = document.getElementById('pieChart').getContext('2d');
-            new Chart(pieChartCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
-                    datasets: [{
-                        data: [1500, 800, 500, 700],
-                        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
-                        borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                    },
-                }
-            });
-        });
-
-        // Função para baixar o relatório em PDF
-        document.getElementById('downloadBtn').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(20);
-            doc.text('Relatório Financeiro', 105, 20, null, null, 'center');
-
-            doc.setFontSize(16);
-            doc.text('Síntese dos Dados', 20, 40);
-
-            doc.setFontSize(12);
-            doc.text('Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:', 20, 50);
-            doc.text('Total de transações: 30 transações', 20, 60);
-            doc.text('Total gasto: R$ 3.500,00', 20, 70);
-            doc.text('Categoria com maior gasto: Alimentação', 20, 80);
-            doc.text('Data mais recente: 22/03/2025', 20, 90);
-
-            doc.save('relatorio_financeiro.pdf');
-        });
-    </script>
-
-</body>
+         </div>
+      </div>
+      <script>
+         // Inicialização dos gráficos
+         document.addEventListener("DOMContentLoaded", function () {
+             // Gráfico de Barras
+             const barChartCtx = document.getElementById('barChart').getContext('2d');
+             new Chart(barChartCtx, {
+                 type: 'bar',
+                 data: {
+                     labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
+                     datasets: [{
+                         label: 'Gastos (R$)',
+                         data: [1500, 800, 500, 700],
+                         backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
+                         borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
+                         borderWidth: 1
+                     }]
+                 },
+                 options: {
+                     responsive: true,
+                     plugins: {
+                         legend: { position: 'top' },
+                     },
+                 }
+             });
+         
+             // Gráfico de Pizza
+             const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+             new Chart(pieChartCtx, {
+                 type: 'pie',
+                 data: {
+                     labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
+                     datasets: [{
+                         data: [1500, 800, 500, 700],
+                         backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
+                         borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
+                         borderWidth: 1
+                     }]
+                 },
+                 options: {
+                     responsive: true,
+                     plugins: {
+                         legend: { position: 'top' },
+                     },
+                 }
+             });
+         });
+         
+         // Função para baixar o relatório em PDF
+         document.getElementById('downloadBtn').addEventListener('click', function () {
+             const { jsPDF } = window.jspdf;
+             const doc = new jsPDF();
+         
+             doc.setFontSize(20);
+             doc.text('Relatório Financeiro', 105, 20, null, null, 'center');
+         
+             doc.setFontSize(16);
+             doc.text('Síntese dos Dados', 20, 40);
+         
+             doc.setFontSize(12);
+             doc.text('Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:', 20, 50);
+             doc.text('Total de transações: 30 transações', 20, 60);
+             doc.text('Total gasto: R$ 3.500,00', 20, 70);
+             doc.text('Categoria com maior gasto: Alimentação', 20, 80);
+             doc.text('Data mais recente: 22/03/2025', 20, 90);
+         
+             doc.save('relatorio_financeiro.pdf');
+         });
+         
+         document.addEventListener("DOMContentLoaded", function () {
+         const menuButton = document.querySelector(".menu-button");
+         const sidebar = document.querySelector(".sidebar");
+         const mainContent = document.querySelector(".main-content");
+         
+         menuButton.addEventListener("click", function () {
+         sidebar.classList.toggle("active");
+         mainContent.classList.toggle("shift");
+         });
+         });
+         
+      </script>
+   </body>
 </html>

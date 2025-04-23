@@ -99,6 +99,7 @@ body {
     margin-left: 260px;
     padding: 20px;
     flex-grow: 1;
+    height: 100vh;
 }
 
 /* Responsive Design */
@@ -235,6 +236,74 @@ body {
 #apply-filters {
     background-color: #6759c3;
     color: white;
+}
+
+.dark-theme h3 {
+    color: #ffffff; /* Título visível no tema escuro */
+}
+
+.dark-theme .table {
+    background-color: #1e1e1e; /* Fundo da tabela no tema escuro */
+    color: #e0e0e0; /* Texto da tabela no tema escuro */
+}
+
+.dark-theme .table-hover tbody tr:hover {
+    background-color: #2a2a2a; /* Cor de hover no tema escuro */
+}
+
+.dark-theme .table-bordered {
+    border-color: #3c3c3c; /* Cor da borda no tema escuro */
+}
+
+.dark-theme .btn-warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.dark-theme .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.dark-theme .thead-light th {
+    background-color: #2c2c2c; /* Fundo do cabeçalho no tema escuro */
+    color: #ffffff; /* Texto do cabeçalho no tema escuro */
+}
+
+.dark-theme .modal-content {
+    background-color: #2c2c2c; /* Fundo do modal no tema escuro */
+    color: #ffffff; /* Texto do modal no tema escuro */
+}
+
+.dark-theme .modal-header {
+    background-color: #3c3c3c; /* Fundo do cabeçalho do modal no tema escuro */
+    border-bottom: 1px solid #444444; /* Borda do cabeçalho no tema escuro */
+}
+
+.dark-theme .modal-footer {
+    background-color: #3c3c3c; /* Fundo do rodapé do modal no tema escuro */
+    border-top: 1px solid #444444; /* Borda do rodapé no tema escuro */
+}
+
+.dark-theme .form-control {
+    background-color: #444444; /* Fundo dos campos de entrada no tema escuro */
+    color: #ffffff; /* Texto dos campos de entrada no tema escuro */
+    border: 1px solid #555555; /* Borda dos campos de entrada no tema escuro */
+}
+
+.dark-theme .form-control::placeholder {
+    color: #aaaaaa; /* Placeholder dos campos de entrada no tema escuro */
+}
+
+.dark-theme .btn-primary {
+    background-color: #6759c3; /* Botão primário no tema escuro */
+    border-color: #6759c3;
+}
+
+.dark-theme .btn-secondary {
+    background-color: #555555; /* Botão secundário no tema escuro */
+    border-color: #555555;
+    color: #ffffff;
 }
 
 

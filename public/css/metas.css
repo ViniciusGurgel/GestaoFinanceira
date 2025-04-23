@@ -1,5 +1,55 @@
+/* ==============================
+   ESTILOS GERAIS DO BODY
+   ============================== */
+   body {
+    background-color: #f8f9fa;
+    color: #333;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+}
 
 
+
+
+body.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* ==============================
+   TEMA CLARO / ESCURO
+   ============================== */
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.light-theme {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* ==============================
+   CONTEÚDO PRINCIPAL
+   ============================== */
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    width: calc(100% - 260px);
+    max-width: 100%;
+    box-sizing: border-box;
+    flex-grow: 1;
+    background-color: white;
+    overflow: hidden;
+}
+
+body.dark-theme .main-content {
+    background-color: black;
+}
+
+/* ==============================
+   SIDEBAR
+   ============================== */
 .sidebar {
     width: 250px;
     position: fixed;
@@ -11,16 +61,9 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-
-.main-content {
-    margin-left: 260px;
-    padding: 20px;
-    flex-grow: 1;
-    width: calc(100% - 260px);
-    background-color: white;
-    overflow: hidden;
-}
-
+/* ==============================
+   TÍTULOS E CONTAINERS
+   ============================== */
 h1 {
     margin-top: 0;
     padding-top: 10px;
@@ -31,8 +74,191 @@ h1 {
     padding: 0 20px;
 }
 
+/* ==============================
+   CARTÕES (CARDS)
+   ============================== */
 .card {
-    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    margin: 0 auto 20px;
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card h5 {
+    color: #6c757d;
+}
+
+.card p {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+/* Tema escuro - cards */
+body.dark-theme .card {
+    background-color: #1e1e1e;
+    border-color: #333333;
+    color: #ffffff;
+}
+
+body.dark-theme .card p,
+body.dark-theme .card h5,
+body.dark-theme .text-muted {
+    color: #ffffff;
+}
+
+/* ==============================
+   BOTÕES
+   ============================== */
+body.dark-theme .btn {
+    border-color: #444444;
+}
+
+body.dark-theme .btn-light {
+    background-color: #444444;
+    color: #ffffff;
+}
+
+body.dark-theme .btn-dark {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Botão de alternância de tema */
+.dark-mode .btn-primary {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+/* ==============================
+   MODAIS
+   ============================== */
+.modal-header-danger {
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
 
+
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden; /* Remove o scroll horizontal */
+}
+
+body.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Estilos para o conteúdo principal */
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    flex-grow: 1;
+    width: calc(100% - 260px);
+    background-color: white;
+}
+body.dark-theme .main-content {
+    background-color: black;
+}
+/* Tema escuro */
+.dark-mode {
+    background-color: #222;
+    color: #fff;
+}
+
+body.dark-theme .card {
+    background-color: #1e1e1e;
+    border-color: #333333;
+}
+
+/* Cartões */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%; /* Garante que os cards não ultrapassem a largura da tela */
+    margin: 0 auto; /* Centraliza os cards */
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card h5 {
+    color: #6c757d; /* Cor dos ícones */
+}
+
+.card p {
+    font-size: 16px;
+    color: #6c757d; /* Cor do texto */
+}
+
+body.dark-theme .card p {
+    color: #ffffff;
+}
+
+body.dark-theme .card h5 {
+    color: #ffffff;
+}
+
+body.dark-theme .text-muted {
+    color: #ffffff;
+}
+
+body.dark-theme .btn {
+    border-color: #444444;
+}
+
+body.dark-theme .btn-light {
+    background-color: #444444;
+    color: #ffffff;
+}
+
+body.dark-theme .btn-dark {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Botão de alternância de tema */
+.dark-mode .btn-primary {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+/* Garante que o conteúdo principal não ultrapasse a largura da viewport */
+.main-content {
+    max-width: 100%; /* Garante que o conteúdo não ultrapasse a largura da tela */
+    padding: 15px; /* Adiciona espaçamento interno */
+    box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+}
+
+.modal-header-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Tema Escuro */
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-theme .card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Tema Claro */
+.light-theme {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.light-theme .card {
+    background-color: #f8f9fa;
+    color: #000000;
+}
