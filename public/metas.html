@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
 
     <!-- CSS Customizado -->
-    <link href="css/dashboard.css" rel="stylesheet">
     <link href="css/metas.css" rel="stylesheet">
 
     <!-- Bibliotecas JS (com defer para carregar após o HTML) -->
@@ -36,17 +35,13 @@
 
 </head>
 
-
-
-
 <body>
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header text-center">
             <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image" 
-                 style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; cursor: pointer;" 
-                 data-bs-toggle="modal" data-bs-target="#profileModal">
+                 style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover;">
             <h6 class="user-name">Lucas</h6>
             <p class="user-description">Gestão Financeira</p>
         </div>
@@ -75,6 +70,7 @@
     <!-- Conteúdo principal -->
     <div class="main-content container-fluid">
         
+
 
         <!-- Tabela de Metas -->
         <div class="card">
@@ -192,6 +188,63 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const toggleButton = document.getElementById("toggleThemeButton");
+            const icon = document.getElementById("themeIcon");
+            const text = document.getElementById("themeText");
+            const page = document.querySelector(".main-content");
+            const cards = document.querySelectorAll(".card");
+            const table = document.querySelector(".table");
+
+            // Função para aplicar o tema
+            function applyTheme(theme) {
+                if (theme === "dark") {
+                    body.classList.add("dark-theme");
+                    icon.className = "bi bi-moon-stars";
+                    text.textContent = "Tema Escuro";
+                    toggleButton.style.backgroundColor = "#333";
+                    toggleButton.style.color = "#fff";
+                    page.style.background = "linear-gradient(135deg, #0f2027, #203a43, #2c5364)";
+                    cards.forEach(card => {
+                        card.style.backgroundColor = "#333";
+                        card.style.color = "#fff";
+                    });
+                    if (table) {
+                        table.classList.add("table-dark");
+                    }
+                } else {
+                    body.classList.remove("dark-theme");
+                    icon.className = "bi bi-sun";
+                    text.textContent = "Tema Claro";
+                    toggleButton.style.backgroundColor = "#f8f9fa";
+                    toggleButton.style.color = "#000";
+                    page.style.backgroundColor = "#fff";
+                    cards.forEach(card => {
+                        card.style.backgroundColor = "#fff";
+                        card.style.color = "#000";
+                    });
+                    if (table) {
+                        table.classList.remove("table-dark");
+                    }
+                }
+                localStorage.setItem("theme", theme);
+            }
+
+            // Aplica o tema salvo
+            const savedTheme = localStorage.getItem("theme") || "light";
+            applyTheme(savedTheme);
+
+            // Evento de clique para alternar tema
+            toggleButton.addEventListener("click", () => {
+                const currentTheme = body.classList.contains("dark-theme") ? "dark" : "light";
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+                applyTheme(newTheme);
+            });
+        });
+    </script>
 
 </body>
 

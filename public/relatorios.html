@@ -32,27 +32,24 @@
          </div>
          <div class="sidebar-body">
             <ul class="menu">
-               <li><a href="dashboard.html" class="menu-link"><i class="bi bi-house-door"></i> Dashboard</a></li>
-               <li><a href="transacoes.html" class="menu-link"><i class="bi bi-cash-stack"></i> Transações</a></li>
-               <li><a href="metas.html" class="menu-link"><i class="bi bi-flag"></i> Metas de Gastos</a></li>
-               <li><a href="relatorios.html" class="menu-link"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
-               <li><a href="personalizar.html" class="menu-link"><i class="bi bi-gear"></i> Personalizar</a></li>
-               <li>
-                  <div class="d-flex flex-column align-items-center gap-3"
-                     style="position: absolute; bottom: 1rem; width: 100%; text-align: center; left: 0;">
-                     <button id="toggleThemeButton"
-                        class="btn d-flex align-items-center gap-2 justify-content-center w-75">
-                     <i id="themeIcon" class="bi"></i>
-                     <span id="themeText"></span>
-                     </button>
-                     <a href="#" class="menu-link d-flex align-items-center justify-content-center w-75"
-                        onclick="logout()">
-                     <i class="bi bi-box-arrow-right"></i> Logout
-                     </a>
-                  </div>
-               </li>
+                <li><a href="dashboard.html" class="menu-link"><i class="bi bi-house-door"></i> Dashboard</a></li>
+                <li><a href="transacoes.html" class="menu-link"><i class="bi bi-cash-stack"></i> Transações</a></li>
+                <li><a href="metas.html" class="menu-link"><i class="bi bi-flag"></i> Metas de Gastos</a></li>
+                <li><a href="relatorios.html" class="menu-link"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
+                <li><a href="personalizar.html" class="menu-link"><i class="bi bi-gear"></i> Personalizar</a></li>
+                <li>
+                    <div class="d-flex flex-column align-items-center gap-3" style="position: absolute; bottom: 1rem; width: 100%; text-align: center; left: 0;">
+                        <button id="toggleThemeButton" class="btn d-flex align-items-center gap-2 justify-content-center w-75">
+                            <i id="themeIcon" class="bi"></i>
+                            <span id="themeText"></span>
+                        </button>
+                        <a href="#" class="menu-link d-flex align-items-center justify-content-center w-75" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </div>
+                </li>
             </ul>
-         </div>
+        </div>
       </div>
       <!-- Conteúdo principal -->
       <div class="main-content container-fluid">
@@ -178,6 +175,62 @@
          mainContent.classList.toggle("shift");
          });
          });
+
+
+         document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const toggleButton = document.getElementById("toggleThemeButton");
+            const icon = document.getElementById("themeIcon");
+            const text = document.getElementById("themeText");
+            const page = document.querySelector(".main-content");
+            const cards = document.querySelectorAll(".card");
+            const table = document.querySelector(".table");
+
+            // Função para aplicar o tema
+            function applyTheme(theme) {
+                if (theme === "dark") {
+                    body.classList.add("dark-theme");
+                    icon.className = "bi bi-moon-stars";
+                    text.textContent = "Tema Escuro";
+                    toggleButton.style.backgroundColor = "#333";
+                    toggleButton.style.color = "#fff";
+                    page.style.background = "linear-gradient(135deg, #0f2027, #203a43, #2c5364)";
+                    cards.forEach(card => {
+                        card.style.backgroundColor = "#333";
+                        card.style.color = "#fff";
+                    });
+                    if (table) {
+                        table.classList.add("table-dark");
+                    }
+                } else {
+                    body.classList.remove("dark-theme");
+                    icon.className = "bi bi-sun";
+                    text.textContent = "Tema Claro";
+                    toggleButton.style.backgroundColor = "#f8f9fa";
+                    toggleButton.style.color = "#000";
+                    page.style.backgroundColor = "#fff";
+                    cards.forEach(card => {
+                        card.style.backgroundColor = "#fff";
+                        card.style.color = "#000";
+                    });
+                    if (table) {
+                        table.classList.remove("table-dark");
+                    }
+                }
+                localStorage.setItem("theme", theme);
+            }
+
+            // Aplica o tema salvo
+            const savedTheme = localStorage.getItem("theme") || "light";
+            applyTheme(savedTheme);
+
+            // Evento de clique para alternar tema
+            toggleButton.addEventListener("click", () => {
+                const currentTheme = body.classList.contains("dark-theme") ? "dark" : "light";
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+                applyTheme(newTheme);
+            });
+        });
          
       </script>
    </body>

@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: 2, title: "Viagem para Europa", saved: 300, goal: 2000, minMonthly: 200, monthsLeft: 9 },
         { id: 3, title: "Novo Notebook", saved: 800, goal: 3000, minMonthly: 250, monthsLeft: 12 }
     ];
+    
 
     function renderGoals() {
         // Limpa a tabela e os cards antes de renderizar
@@ -29,10 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${goal.monthsLeft} meses</td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <button class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" onclick="openEditModal(${index})" title="Editar" style="width: 70px; background-color: #0100ffa3;">
+                            <button class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" onclick="openEditModal(${index})" title="Editar" style="width: 70px;">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" onclick="deleteGoal(${index})" title="Excluir" style="width: 70px; background-color: #ff0000ba;">
+                            <button class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" onclick="deleteGoal(${index})" title="Excluir" style="width: 70px;">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>

@@ -103,6 +103,7 @@ body {
     padding: 20px;
     flex-grow: 1;
     width: calc(100% - 260px);
+    height: 100vh;
     background-color: white;
 }
 
@@ -271,4 +272,46 @@ canvas {
 .btn-primary:hover {
     background-color: #45A049;
     border-color: #45A049;
+}
+
+/* Tema escuro */
+body.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-theme .main-content {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-theme .card {
+    background-color: #2c2c2c;
+    color: #ffffff;
+}
+
+body.dark-theme .card-header {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+body.dark-theme .list-group-item {
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border-color: #444444;
+}
+
+body.dark-theme .btn-primary {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    color: #ffffff;
+}
+
+body.dark-theme .btn-primary:hover {
+    background-color: #45A049;
+    border-color: #45A049;
+}
+
+body.dark-theme canvas {
+    background-color: #1e1e1e;
 }
