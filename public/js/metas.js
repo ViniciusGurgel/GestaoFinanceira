@@ -160,8 +160,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Função para excluir uma meta
     window.deleteGoal = function (index) {
         if (confirm("Tem certeza que deseja excluir esta meta?")) {
-            goals.splice(index, 1);
-            renderGoals();
+            goals.splice(index, 1); // Remove a meta da lista
+            renderGoals();          // Re-renderiza a tabela e os cards
+            mostrarAlerta('alertaExclusao'); // Exibe alerta de exclusão
         }
     };
 
