@@ -62,7 +62,6 @@ async function carregarCategorias() {
         const response = await fetchComToken("/personalizar/listar_categorias", {
             method: "GET"
         });
-
         if (!response.ok) {
             throw new Error("Erro ao buscar categorias.");
         }
@@ -316,7 +315,10 @@ const editarTransacao = (linha) => {
 // Lista original de transações
 const fetchTransacoes = async () => {
     try {
-        const response = await fetchComToken("/api/listar_transacoes");
+        const response = await fetchComToken("/api/listar_transacoes",{
+            method: "GET"
+        });
+        console.log("Response:", response);
         if (!response.ok) throw new Error("Erro ao buscar transações");
         const transacoes = await response.json();
         return transacoes.map(transacao => ({
