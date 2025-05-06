@@ -72,6 +72,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                 },
             ],
         }, defaultOptions);
+
+        // Resumo de Categorias (ul dinâmica)
+        const resumoDiv = document.getElementById('resumoCategorias');
+        resumoDiv.innerHTML = ""; // Limpa conteúdo anterior
+
+        data.categorias.forEach((categoria, index) => {
+            const valor = data.despesas[index].toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${categoria}:</strong> ${valor}`;
+            resumoDiv.appendChild(li);
+        });
     } catch (error) {
         console.error('Erro ao carregar gráfico de categorias:', error);
     }
@@ -122,7 +137,59 @@ document.addEventListener("DOMContentLoaded", async function () {
             },
         ],
     }, defaultOptions);
+
+    try {
+        const res = await fetchComToken('/api/ultimas_transacoes');
+        const transacoes = await res.json();
     
+        const tbody = document.getElementById("ultimasTransacoesBody");
+        const swiperWrapper = document.querySelector(".swiper-wrapper");
+    
+        tbody.innerHTML = "";
+        swiperWrapper.innerHTML = "";
+    
+        transacoes.forEach(transacao => {
+            const valorFormatado = parseFloat(transacao.Valor).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+    
+            const dataFormatada = new Date(transacao.Data).toLocaleDateString('pt-BR');
+    
+            // Preencher tabela
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${transacao.Id}</td>
+                <td>${transacao.Tipo}</td>
+                <td>${transacao.Categoria}</td>
+                <td>${valorFormatado}</td>
+                <td>${dataFormatada}</td>
+            `;
+            tbody.appendChild(tr);
+    
+            // Preencher swiper
+            const slide = document.createElement("div");
+            slide.className = "swiper-slide";
+            slide.innerHTML = `
+                <div class="transaction-card">
+                    <h6>${transacao.Tipo} - ${transacao.Categoria}</h6>
+                    <p>Valor: ${valorFormatado}</p>
+                    <p>Data: ${dataFormatada}</p>
+                    <p>Meio: ${transacao.MeioPagamento}</p>
+                </div>
+            `;
+            swiperWrapper.appendChild(slide);
+        });
+    
+        // Atualiza o Swiper (se necessário)
+        if (swiper && swiper.update) {
+            swiper.update();
+        }
+    } catch (error) {
+        console.error("Erro ao carregar últimas transações:", error);
+        const tbody = document.getElementById("ultimasTransacoesBody");
+        tbody.innerHTML = `<tr><td colspan="5">Erro ao carregar transações.</td></tr>`;
+    }
 });
 
 async function fetchComToken(url, options = {}) {
