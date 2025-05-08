@@ -1,4 +1,7 @@
+let addTransactionModal; // Declaração global do modal
+
 document.addEventListener("DOMContentLoaded", async () => {
+    addTransactionModal = new bootstrap.Modal(document.getElementById("addTransactionModal"));
     await inicializarPagina();
 });
 
@@ -62,7 +65,6 @@ async function carregarCategorias() {
         const response = await fetchComToken("/personalizar/listar_categorias", {
             method: "GET"
         });
-
         if (!response.ok) {
             throw new Error("Erro ao buscar categorias.");
         }
@@ -86,17 +88,17 @@ async function carregarCategorias() {
 }
 
 function configurarTema() {
-    const toggleThemeButton = document.getElementById("toggleTheme");
-    const body = document.body;      
+    const toggleThemeButton = document.getElementById("toggleThemeButton");
+    const body = document.body;
     toggleThemeButton.addEventListener("click", () => {
         if (body.classList.contains("light-theme")) {
             body.classList.remove("light-theme");
             body.classList.add("dark-theme");
-            toggleThemeButton.textContent = "☀️ Tema Claro";
+            toggleThemeButton.innerHTML = '<i id="themeIcon" class="bi bi-moon-stars"></i> <span id="themeText">Tema Escuro</span>';
         } else {
             body.classList.remove("dark-theme");
             body.classList.add("light-theme");
-            toggleThemeButton.textContent = "🌙 Tema Escuro";
+            toggleThemeButton.innerHTML = '<i id="themeIcon" class="bi bi-sun"></i> <span id="themeText">Tema Claro</span>';
         }
 
         // Atualizar estilos da tabela de transações
@@ -113,6 +115,15 @@ function configurarTema() {
     }
 
     // Chamar a função para aplicar o estilo inicial
+    const savedTheme = localStorage.getItem("theme") || "light";
+    const initialThemeButton = document.getElementById("toggleThemeButton");
+    if (savedTheme === "dark") {
+        body.classList.add("dark-theme");
+        initialThemeButton.innerHTML = '<i id="themeIcon" class="bi bi-moon-stars"></i> <span id="themeText">Tema Escuro</span>';
+    } else {
+        body.classList.add("light-theme");
+        initialThemeButton.innerHTML = '<i id="themeIcon" class="bi bi-sun"></i> <span id="themeText">Tema Claro</span>';
+    }
     atualizarEstilosTabela();
 }
 
@@ -121,16 +132,43 @@ function configurarFiltros() {
     const filterMonth = document.getElementById("filter-month");
     const filterYear = document.getElementById("filter-year");
     const applyFiltersButton = document.getElementById("apply-filters");
+    const transacoesLista = document.getElementById("transacoes-lista");
 
-    clearFiltersButton.addEventListener("click", () => {
+    clearFiltersButton.addEventListener("click", async () => {
         filterMonth.value = "";
         filterYear.value = "";
         applyFiltersButton.classList.remove("active");
+        const transacoesOriginais = await fetchTransacoes();
+        renderizarTransacoes(transacoesOriginais);
     });
 
     applyFiltersButton.addEventListener("click", () => {
         applyFiltersButton.classList.add("active");
+        const selectedMonth = filterMonth.value;
+        const selectedYear = filterYear.value;
+        filtrarTransacoes(selectedMonth, selectedYear);
     });
+
+    async function filtrarTransacoes(mes, ano) {
+        const transacoesOriginais = await fetchTransacoes();
+        let transacoesFiltradas = transacoesOriginais;
+
+        if (mes) {
+            transacoesFiltradas = transacoesFiltradas.filter(transacao => {
+                const dataTransacao = new Date(transacao.data);
+                return dataTransacao.getMonth() + 1 === parseInt(mes);
+            });
+        }
+
+        if (ano) {
+            transacoesFiltradas = transacoesFiltradas.filter(transacao => {
+                const dataTransacao = new Date(transacao.data);
+                return dataTransacao.getFullYear() === parseInt(ano);
+            });
+        }
+
+        renderizarTransacoes(transacoesFiltradas);
+    }
 }
 
 function configurarEventosMenu() {
@@ -157,6 +195,7 @@ function configurarEventosMenu() {
 
 function configurarEventosTransacoes(transacoesOriginais) {
     const transacoesLista = document.getElementById("transacoes-lista");
+    const transactionForm = document.getElementById("transactionForm");
 
     transacoesLista.addEventListener("click", function (event) {
         const target = event.target;
@@ -172,49 +211,56 @@ function configurarEventosTransacoes(transacoesOriginais) {
         }
     });
 
-    document.querySelector('[href="#todas"]').addEventListener("click", () => {
-        renderizarTransacoes(transacoesOriginais);
-        atualizarSaldoTotal();
+    document.querySelector('[href="#todas"]').addEventListener("click", async () => {
+        const transacoesAtualizadas = await fetchTransacoes();
+        renderizarTransacoes(transacoesAtualizadas);
     });
 
-    document.querySelector('[href="#receitas"]').addEventListener("click", () => {
-        const receitas = transacoesOriginais.filter((t) => t.tipo === "Receita");
+    document.querySelector('[href="#receitas"]').addEventListener("click", async () => {
+        const transacoesAtualizadas = await fetchTransacoes();
+        const receitas = transacoesAtualizadas.filter((t) => t.tipo === "Receita");
         renderizarTransacoes(receitas);
-        atualizarSaldoTotal();
     });
 
-    document.querySelector('[href="#despesas"]').addEventListener("click", () => {
-        const despesas = transacoesOriginais.filter((t) => t.tipo === "Despesa");
+    document.querySelector('[href="#despesas"]').addEventListener("click", async () => {
+        const transacoesAtualizadas = await fetchTransacoes();
+        const despesas = transacoesAtualizadas.filter((t) => t.tipo === "Despesa");
         renderizarTransacoes(despesas);
-        atualizarSaldoTotal();
     });
 
     const addTransactionModalButton = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#addTransactionModal"]');
-    const addTransactionModal = new bootstrap.Modal(document.getElementById("addTransactionModal"));
     addTransactionModalButton.addEventListener("click", () => {
+        transactionForm.reset();
+        document.getElementById("addTransactionButton").textContent = "Adicionar Transação";
+        document.getElementById("addTransactionButton").removeAttribute("data-editing-id");
         addTransactionModal.show();
     });
 
     const addTransactionButton = document.getElementById("addTransactionButton");
     const transactionCategorySelect = document.getElementById("transactionCategory");
+    const transactionNameInput = document.getElementById("transactionName");
+    const transactionTypeSelect = document.getElementById("transactionType");
+    const transactionValueInput = document.getElementById("transactionValue");
+    const transactionDateInput = document.getElementById("transactionDate");
 
-    addTransactionButton.addEventListener("click", async (event) => {
+    transactionForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const tipo = document.getElementById("transactionType").value;
+        const nome = transactionNameInput.value;
+        const tipo = transactionTypeSelect.value;
         const categoria = transactionCategorySelect.value;
-        const valor = parseFloat(document.getElementById("transactionValue").value);
-        const data = document.getElementById("transactionDate").value;
+        const valor = parseFloat(transactionValueInput.value);
+        const data = transactionDateInput.value;
 
-        if (!tipo || !categoria || isNaN(valor) || !data) {
+        if (!nome || !tipo || !categoria || isNaN(valor) || !data) {
             alert("Por favor, preencha todos os campos.");
             return;
         }
 
         const novaTransacao = {
-            nome: "Teste",
+            nome: nome,
             tipoTransacaoId: tipo === "receita" ? 1 : 2,
-            meioPagamentoId: 1,
+            meioPagamentoId: 1, // Por padrão
             categoriaId: categoria,
             valor: valor,
             data: data
@@ -234,76 +280,47 @@ function configurarEventosTransacoes(transacoesOriginais) {
                     body: JSON.stringify(novaTransacao)
                 });
             }
-            window.location.reload();
-        
-            addTransactionModal.hide();
-            addTransactionButton.removeAttribute("data-editing-id");
-            addTransactionButton.textContent = "Adicionar Transação";
-        
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Erro ao salvar transação:", errorData);
+                alert(`Ocorreu um erro ao salvar a transação: ${errorData.error || response.statusText}`);
+                return;
+            }
+
             const transacoesAtualizadas = await fetchTransacoes();
             renderizarTransacoes(transacoesAtualizadas);
-        
+            addTransactionModal.hide();
+            transactionForm.reset();
+            addTransactionButton.removeAttribute("data-editing-id");
+            addTransactionButton.textContent = "Adicionar Transação";
+
         } catch (error) {
-            console.error(error);
+            console.error("Erro:", error);
             alert("Ocorreu um erro ao salvar a transação.");
-        }        
-    });
-
-    const modal = document.getElementById("addTransactionModal");
-
-    modal.addEventListener("hidden.bs.modal", function () {
-        document.getElementById("transactionType").value = "";
-        document.getElementById("transactionCategory").value = "";
-        document.getElementById("transactionValue").value = "";
-        document.getElementById("transactionDate").value = "";
-
-        const addTransactionButton = document.getElementById("addTransactionButton");
-        addTransactionButton.textContent = "Adicionar";
-        delete addTransactionButton.dataset.editingId;
-
-        const backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) {
-            backdrop.remove();
         }
-
-        document.body.classList.remove("modal-open");
-        document.body.style = "";
     });
 
-    const transacoes = [
-        { nome: "Salário Mensal", tipo: "Receita", categoria: "Salário", valor: "R$ 5.000,00", data: "2025-04-05" },
-        { nome: "Supermercado", tipo: "Despesa", categoria: "Alimentação", valor: "R$ 450,00", data: "2025-04-06" },
-        { nome: "Mensalidade Academia", tipo: "Despesa", categoria: "Saúde", valor: "R$ 120,00", data: "2025-04-07" }
-    ];
-
-    transacoes.forEach(transacao => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${transacao.nome}</td>
-            <td>${transacao.tipo}</td>
-            <td>${transacao.categoria}</td>
-            <td>${transacao.valor}</td>
-            <td>${transacao.data}</td>
-            <td>
-                <button class="btn btn-sm btn-warning">Editar</button>
-                <button class="btn btn-sm btn-danger">Excluir</button>
-            </td>
-        `;
-        transacoesLista.appendChild(row);
+    const modalElement = document.getElementById("addTransactionModal");
+    modalElement.addEventListener("hidden.bs.modal", () => {
+        transactionForm.reset();
+        addTransactionButton.textContent = "Adicionar Transação";
+        addTransactionButton.removeAttribute("data-editing-id");
     });
 }
 
-// Função para editar transação
-const editarTransacao = (linha) => {
+const editarTransacao = async (linha) => {
     const id = linha.dataset.id;
-    const tipo = linha.children[0].textContent.trim();
-    const categoria = linha.children[1].textContent.trim();
-    const valor = linha.children[2].textContent.replace("R$ ", "").trim();
-    const data = linha.children[3].textContent.trim();
+    const nome = linha.cells[0].textContent.trim();
+    const tipoTexto = linha.cells[1].textContent.trim();
+    const categoria = linha.cells[2].textContent.trim();
+    const valorTexto = linha.cells[3].textContent.replace("R$", "").trim().replace(",", ".");
+    const data = linha.cells[4].textContent.trim();
 
-    document.getElementById("transactionType").value = tipo === "Receita" ? "receita" : "despesa";
+    document.getElementById("transactionName").value = nome;
+    document.getElementById("transactionType").value = tipoTexto === "Receita" ? "receita" : "despesa";
     document.getElementById("transactionCategory").value = categoria;
-    document.getElementById("transactionValue").value = parseFloat(valor);
+    document.getElementById("transactionValue").value = parseFloat(valorTexto);
     document.getElementById("transactionDate").value = data;
 
     const addTransactionButton = document.getElementById("addTransactionButton");
@@ -313,11 +330,17 @@ const editarTransacao = (linha) => {
     addTransactionModal.show();
 };
 
-// Lista original de transações
 const fetchTransacoes = async () => {
     try {
-        const response = await fetchComToken("/api/listar_transacoes");
-        if (!response.ok) throw new Error("Erro ao buscar transações");
+        const response = await fetchComToken("/api/listar_transacoes", {
+            method: "GET"
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Erro ao buscar transações:", errorData);
+            alert(`Erro ao buscar transações: ${errorData.error || response.statusText}`);
+            return [];
+        }
         const transacoes = await response.json();
         return transacoes.map(transacao => ({
             id: transacao.Id,
@@ -328,12 +351,12 @@ const fetchTransacoes = async () => {
             data: transacao.Data
         }));
     } catch (error) {
-        console.error(error);
+        console.error("Erro:", error);
+        alert("Ocorreu um erro ao buscar as transações.");
         return [];
     }
 };
 
-// Função para renderizar a lista de transações
 const renderizarTransacoes = (transacoes) => {
     const transacoesLista = document.getElementById("transacoes-lista");
     transacoesLista.innerHTML = "";
@@ -356,7 +379,6 @@ const renderizarTransacoes = (transacoes) => {
     atualizarSaldoTotal();
 };
 
-// Função para excluir uma transação
 const excluirTransacao = async (linha) => {
     const id = linha.dataset.id;
     if (!confirm("Tem certeza de que deseja excluir esta transação?")) {
@@ -369,11 +391,15 @@ const excluirTransacao = async (linha) => {
         });
 
         if (!response.ok) {
-            throw new Error("Erro ao excluir transação.");
+            const errorData = await response.json();
+            console.error("Erro ao excluir transação:", errorData);
+            alert(`Erro ao excluir transação: ${errorData.error || response.statusText}`);
+            return;
         }
         linha.remove();
         alert("Transação excluída com sucesso.");
-        location.reload();
+        const transacoesAtualizadas = await fetchTransacoes();
+        renderizarTransacoes(transacoesAtualizadas);
     } catch (error) {
         console.error("Erro:", error);
         alert("Falha ao excluir a transação.");

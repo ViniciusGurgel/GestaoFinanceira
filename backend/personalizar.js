@@ -10,7 +10,6 @@ router.use(conectarSQLitePorUsuario);
 // Rota para listar todas as categorias
 router.get('/listar_categorias', (req, res) => {
     const db = req.db;
-
     db.all(`SELECT * FROM Categoria ORDER BY Nome ASC`, [], (err, rows) => {
         if (err) {
             console.error("Erro ao buscar categorias:", err);

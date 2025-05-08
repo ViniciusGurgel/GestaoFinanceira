@@ -15,7 +15,7 @@ router.get('/verificar_token', (req, res) => {
 // Rota para obter todas as transações
 router.get('/listar_transacoes', (req, res) => {
     const db = req.db;
-
+    console.log("Conectando ao banco de dados para listar transações...");
     db.all(`
         SELECT Transacao.Id, Transacao.Nome, 
                TipoTransacao.Nome AS Tipo, 
@@ -100,5 +100,118 @@ router.put('/alterar_transacao/:id', (req, res) => {
         res.json({ message: "Transação atualizada com sucesso!" });
     });
 });
+
+router.get('/grafico_transacoes', (req, res) => {
+    const db = req.db;
+    db.all(`
+        SELECT strftime('%Y-%m', Transacao.Data) AS mes, 
+               SUM(CASE WHEN TipoTransacao.Nome = 'Receita' THEN Transacao.Valor ELSE 0 END) AS total_receitas,
+               SUM(CASE WHEN TipoTransacao.Nome = 'Despesa' THEN Transacao.Valor ELSE 0 END) AS total_despesas
+        FROM Transacao
+        JOIN TipoTransacao ON Transacao.TipoTransacaoId = TipoTransacao.Id
+        GROUP BY strftime('%Y-%m', Transacao.Data)
+        ORDER BY mes DESC
+        LIMIT 12
+    `, [], (err, rows) => {
+        if (err) {
+            console.error("Erro ao buscar transações:", err);
+            return res.status(500).json({ error: "Erro ao buscar transações para o gráfico." });
+        }
+
+        // Formatando os dados para o gráfico
+        const meses = rows.map(row => row.mes);
+        const receitas = rows.map(row => row.total_receitas);
+        const despesas = rows.map(row => row.total_despesas);
+
+        res.json({
+            meses,
+            receitas,
+            despesas,
+        });
+    });
+});
+
+router.get('/grafico_categorias', (req, res) => {
+    const db = req.db;
+    db.all(`
+        SELECT Categoria.Nome AS categoria, SUM(Transacao.Valor) AS total_despesas
+        FROM Transacao
+        JOIN Categoria ON Transacao.CategoriaId = Categoria.Id
+        WHERE Transacao.TipoTransacaoId = (SELECT Id FROM TipoTransacao WHERE Nome = 'Despesa')
+        GROUP BY Categoria.Nome
+        ORDER BY total_despesas DESC
+    `, [], (err, rows) => {
+        if (err) {
+            console.error("Erro ao buscar categorias de despesas:", err);
+            return res.status(500).json({ error: "Erro ao buscar categorias de despesas." });
+        }
+
+        const categorias = rows.map(row => row.categoria);
+        const despesas = rows.map(row => row.total_despesas);
+
+        res.json({
+            categorias,
+            despesas,
+        });
+    });
+});
+
+router.get('/evolucao_transacoes', (req, res) => {
+    const { periodoInicio, periodoFim } = req.query;
+    const db = req.db;
+    
+    const sql = `
+        SELECT strftime('%Y-%m', Transacao.Data) AS mes, 
+               SUM(CASE WHEN TipoTransacao.Nome = 'Receita' THEN Transacao.Valor ELSE 0 END) AS total_receitas,
+               SUM(CASE WHEN TipoTransacao.Nome = 'Despesa' THEN Transacao.Valor ELSE 0 END) AS total_despesas
+        FROM Transacao
+        JOIN TipoTransacao ON Transacao.TipoTransacaoId = TipoTransacao.Id
+        WHERE Transacao.Data BETWEEN ? AND ?
+        GROUP BY strftime('%Y-%m', Transacao.Data)
+        ORDER BY mes DESC
+    `;
+    
+    db.all(sql, [periodoInicio, periodoFim], (err, rows) => {
+        if (err) {
+            console.error("Erro ao buscar evolução das transações:", err);
+            return res.status(500).json({ error: "Erro ao buscar evolução das transações." });
+        }
+
+        const meses = rows.map(row => row.mes);
+        const receitas = rows.map(row => row.total_receitas);
+        const despesas = rows.map(row => row.total_despesas);
+
+        res.json({
+            meses,
+            receitas,
+            despesas,
+        });
+    });
+});
+
+router.get('/ultimas_transacoes', (req, res) => {
+    const db = req.db;
+    
+    db.all(`
+        SELECT Transacao.Id, Transacao.Nome, 
+               TipoTransacao.Nome AS Tipo, 
+               Categoria.Nome AS Categoria, 
+               MeioPagamento.Nome AS MeioPagamento, 
+               Transacao.Valor, Transacao.Data 
+        FROM Transacao
+        JOIN TipoTransacao ON Transacao.TipoTransacaoId = TipoTransacao.Id
+        JOIN Categoria ON Transacao.CategoriaId = Categoria.Id
+        JOIN MeioPagamento ON Transacao.MeioPagamentoId = MeioPagamento.Id
+        ORDER BY Transacao.Data DESC
+        LIMIT 5
+    `, [], (err, rows) => {
+        if (err) {
+            console.error("Erro ao buscar as últimas transações:", err);
+            return res.status(500).json({ error: "Erro ao buscar as últimas transações." });
+        }
+        res.json(rows);
+    });
+});
+
 
 module.exports = router;
