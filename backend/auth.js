@@ -149,4 +149,20 @@ router.post('/verificar_codigo', async (req, res) => {
     }
 });
 
+// Rota protegida para buscar informações do usuário logado
+router.get('/usuario_info', verificarToken, async (req, res) => {
+    try {
+        const usuario = await Usuario.findById(req.user.userId).select('-Senha'); // remove a senha da resposta
+
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        res.json(usuario);
+    } catch (err) {
+        console.error("Erro ao buscar informações do usuário:", err);
+        res.status(500).json({ error: "Erro interno ao buscar dados do usuário." });
+    }
+});
+
 module.exports = router;

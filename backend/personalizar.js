@@ -65,4 +65,25 @@ router.put('/alterar_categoria/:id', (req, res) => {
     });
 });
 
+// Rota para adicionar uma nova categoria
+router.post('/incluir_categoria', (req, res) => {
+    const db = req.db;
+    const { nome } = req.body;
+
+    if (!nome) {
+        return res.status(400).json({ error: "O nome da categoria é obrigatório." });
+    }
+
+    const sql = `INSERT INTO Categoria (Nome) VALUES (?)`;
+
+    db.run(sql, [nome], function (err) {
+        if (err) {
+            console.error("Erro ao inserir categoria:", err);
+            return res.status(500).json({ error: "Erro ao inserir categoria" });
+        }
+
+        res.status(201).json({ message: "Categoria criada com sucesso!", categoriaId: this.lastID });
+    });
+});
+
 module.exports = router;
