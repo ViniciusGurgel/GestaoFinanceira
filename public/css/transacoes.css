@@ -320,3 +320,20 @@ body {
     padding: 1rem 1.5rem;
     transition: opacity 0.5s ease-in-out;
   }
+
+  .custom-alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: auto;
+    min-width: 300px;
+    max-width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    transition: opacity 0.5s ease-in-out;
+  }
+

@@ -139,6 +139,24 @@
                   </div>
                </div>
             </div>
+
+
+            <!-- Alertas -->
+            <div id="alertaEdicao" class="alert alert-success alert-dismissible fade d-none custom-alert" role="alert">
+               <i class="bi bi-check-circle-fill me-2"></i>
+               <span>Transação editada com sucesso!</span>
+            </div>
+
+            <div id="alertaAdicao" class="alert alert-success alert-dismissible fade d-none custom-alert" role="alert">
+               <i class="bi bi-check-circle-fill me-2"></i>
+               <span>Transação adicionada com sucesso!</span>
+            </div>
+
+            <div id="alertaExclusao" class="alert alert-danger alert-dismissible fade d-none custom-alert" role="alert">
+               <i class="bi bi-trash-fill me-2"></i>
+               <span>Transação excluída com sucesso!</span>
+            </div>
+
             <!-- Botão Adicionar Transação -->
             <div class="btn-center">
                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
@@ -147,11 +165,6 @@
             </div>
          </div>
       </div>
-   </div>
-   <!-- Alerta de Adicionar Transação -->
-   <div id="alertaAdicao" class="alert alert-success alert-dismissible fade d-none custom-alert" role="alert">
-      <i class="bi bi-check-circle-fill me-2"></i>
-      <span>Transação adicionada com sucesso!</span>
    </div>
    <!-- Modal de Adicionar Transação -->
    <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-labelledby="addTransactionModalLabel"
@@ -203,27 +216,44 @@
    </div>
    <!-- Saldo Total -->
    <div id="total-balance" class="positive">Saldo Total: R$ 2.850,00</div>
-
    <script>
       // Função genérica para mostrar alerta
       function mostrarAlerta(id) {
-        const alerta = document.getElementById(id);
-        alerta.classList.remove('d-none');
-        alerta.classList.add('show');
-        setTimeout(() => {
-          alerta.classList.remove('show');
-          alerta.classList.add('d-none');
-        }, 1750);
+         const alerta = document.getElementById(id);
+         alerta.classList.remove('d-none');
+         alerta.classList.add('show');
+         setTimeout(() => {
+            alerta.classList.remove('show');
+            alerta.classList.add('d-none');
+         }, 1750);
       }
-    
+      document.getElementById('editGoalForm').addEventListener('submit', function (event) {
+         event.preventDefault();
+         const modal = bootstrap.Modal.getInstance(document.getElementById('editGoalModal'));
+         modal.hide();
+         mostrarAlerta('alertaEdicao');
+      });
+   </script>
+   <script>
+      // Função genérica para mostrar alerta
+      function mostrarAlerta(id) {
+         const alerta = document.getElementById(id);
+         alerta.classList.remove('d-none');
+         alerta.classList.add('show');
+         setTimeout(() => {
+            alerta.classList.remove('show');
+            alerta.classList.add('d-none');
+         }, 1750);
+      }
+
       // Formulário de adição de meta
       document.getElementById('transactionForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addTransactionModal'));
-        modal.hide();
-        mostrarAlerta('alertaAdicao');
+         event.preventDefault();
+         const modal = bootstrap.Modal.getInstance(document.getElementById('addTransactionModal'));
+         modal.hide();
+         mostrarAlerta('alertaAdicao');
       });
-    </script>
+   </script>
    <script>
       document.addEventListener("DOMContentLoaded", () => {
          const body = document.body;
@@ -265,4 +295,3 @@
       });
    </script>
 </body>
-
