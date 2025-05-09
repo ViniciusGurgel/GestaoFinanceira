@@ -150,7 +150,7 @@ router.post('/verificar_codigo', async (req, res) => {
 });
 
 // Rota protegida para buscar informações do usuário logado
-router.get('/usuario_info', verificarToken, async (req, res) => {
+router.get('/usuario_info', async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.user.userId).select('-Senha'); // remove a senha da resposta
 
