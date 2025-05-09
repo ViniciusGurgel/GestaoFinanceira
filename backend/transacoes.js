@@ -15,7 +15,6 @@ router.get('/verificar_token', (req, res) => {
 // Rota para obter todas as transações
 router.get('/listar_transacoes', (req, res) => {
     const db = req.db;
-    console.log("Conectando ao banco de dados para listar transações...");
     db.all(`
         SELECT Transacao.Id, Transacao.Nome, 
                TipoTransacao.Nome AS Tipo, 

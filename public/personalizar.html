@@ -110,27 +110,19 @@
                     </div>
                 </div>
 
-                <!-- Linha para os outros cards -->
-                <div class="col-12 col-md-5 col-lg-4">
-                    <!-- Card para Gerenciar Categorias -->
-                    <div class="card text-center p-3 shadow-sm h-100">
-                        <h5><i class="bi bi-tags fs-3"></i></h5>
-                        <p class="mt-2">Gerenciar Categorias</p>
-                        <ul id="categoryList" class="list-group mb-2">
-                            <li class="list-group-item d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#editCategoryModal" data-category-name="Alimentação" style="cursor: pointer;">
-                                <div class="d-flex align-items-center">
-                                    <span class="category-color" style="width: 20px; height: 20px; background-color: #6c757d; border-radius: 50%; display: inline-block; margin-right: 10px;"></span>
-                                    Alimentação
-                                </div>
-                                <button class="btn btn-sm btn-danger delete-category-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </li>
-                        </ul>
-                        
-                        <button id="addCategoryButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Adicionar Categoria</button>
+                    <!-- Linha para os outros cards -->
+                    <div class="col-12 col-md-5 col-lg-4">
+                        <!-- Card para Gerenciar Categorias -->
+                        <div class="card text-center p-3 shadow-sm h-100">
+                            <h5><i class="bi bi-tags fs-3"></i></h5>
+                            <p class="mt-2">Gerenciar Categorias</p>
+                            <ul id="categoryList" class="list-group mb-2">
+                                <!-- Itens da categoria serão inseridos dinamicamente via JavaScript -->
+                            </ul>                            
+                            
+                            <button id="addCategoryButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Adicionar Categoria</button>
+                        </div>
                     </div>
-                </div>
 
                 <div class="col-12 col-md-5 col-lg-4">
                     

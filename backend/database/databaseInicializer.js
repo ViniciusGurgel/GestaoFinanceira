@@ -11,12 +11,12 @@ function inserirDadosIniciais(db) {
         });
 
         // Categorias
-        db.run(`INSERT OR IGNORE INTO Categoria (Nome) VALUES 
-            ('Alimentação'), 
-            ('Transporte'), 
-            ('Lazer'), 
-            ('Educação'),
-            ('Saúde')`, (err) => {
+        db.run(`INSERT OR IGNORE INTO Categoria (Nome, Cor) VALUES 
+                ('Alimentação', '#ff6384'), 
+                ('Transporte', '#36a2eb'), 
+                ('Lazer', '#ffce56'), 
+                ('Educação', '#4bc0c0'),
+                ('Saúde', '#9966ff')`, (err) => {
             if (err) console.error('Erro ao inserir Categoria:', err);
         });
 
@@ -73,7 +73,8 @@ function inicializarBancoUsuario(userId) {
 
         db.run(`CREATE TABLE IF NOT EXISTS Categoria (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            Nome TEXT UNIQUE NOT NULL
+            Nome TEXT UNIQUE NOT NULL,
+            Cor TEXT
         )`);
 
         db.run(`CREATE TABLE IF NOT EXISTS MeioPagamento (
