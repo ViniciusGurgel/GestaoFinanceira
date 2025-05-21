@@ -8,11 +8,6 @@
     <meta name="author" content="Seu Nome">
     <title>Metas de Gastos</title>
 
-    <!-- Scripts -->
-    <script src="js/personalizar.js"></script>
-    <script src="js/geral.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -24,7 +19,6 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="img/favicon.png">
-    
 </head>
 
 <body class="metas-page">
@@ -32,8 +26,7 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header text-center">
             <img src="img/profileExample.jpg" alt="Foto de Perfil" class="profile-image" 
-                 style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; cursor: pointer;" 
-                 data-bs-toggle="modal" data-bs-target="#profileModal">
+                 style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; cursor: pointer;">
             <h6 class="user-name">Lucas</h6>
             <p class="user-description">Gestão Financeira</p>
         </div>
@@ -70,8 +63,7 @@
                     <div class="card shadow-sm p-4 rounded-4">
                         <div class="d-flex flex-column justify-content-center align-items-center mb-4">
                             <img src="img/profileExample.jpg" alt="Foto de Perfil" class="rounded-circle mb-3" 
-                                 style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" 
-                                 data-bs-toggle="modal" data-bs-target="#profileModal">
+                                 style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;">
                             <div class="text-center">
                                 <h5 class="mb-0">Lucas</h5>
                                 <small class="text-muted">lucas@email.com</small>
@@ -110,148 +102,31 @@
                     </div>
                 </div>
 
-                    <!-- Linha para os outros cards -->
-                    <div class="col-12 col-md-5 col-lg-4">
-                        <!-- Card para Gerenciar Categorias -->
-                        <div class="card text-center p-3 shadow-sm h-100">
-                            <h5><i class="bi bi-tags fs-3"></i></h5>
-                            <p class="mt-2">Gerenciar Categorias</p>
-                            <ul id="categoryList" class="list-group mb-2">
-                                <!-- Itens da categoria serão inseridos dinamicamente via JavaScript -->
-                            </ul>                            
-                            
-                            <button id="addCategoryButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Adicionar Categoria</button>
-                        </div>
+                <!-- Card para Gerenciar Categorias -->
+                <div class="col-12 col-md-5 col-lg-4">
+                    <div class="card text-center p-3 shadow-sm h-100">
+                        <h5><i class="bi bi-tags fs-3"></i></h5>
+                        <p class="mt-2">Gerenciar Categorias</p>
+                        <ul id="categoryList" class="list-group mb-2">
+                            <!-- Itens da categoria serão inseridos dinamicamente via JavaScript -->
+                        </ul>                            
+                        
+                        <button id="addCategoryButton" class="btn btn-success">Adicionar Categoria</button>
                     </div>
+                </div>
 
                 <div class="col-12 col-md-5 col-lg-4">
-                    
+                    <!-- Espaço para outros cards -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Adicionar Nova Categoria -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCategoryModalLabel">Adicionar Nova Categoria</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addCategoryForm">
-                        <div class="mb-3">
-                            <label for="categoryName" class="form-label">Nome da Categoria</label>
-                            <input type="text" class="form-control" id="categoryName" placeholder="Digite o nome da categoria" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="categoryColor" class="form-label">Cor da Categoria</label>
-                            <input type="color" class="form-control form-control-color" id="categoryColor" value="#6c757d" title="Escolha uma cor">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" id="saveCategoryButton">Salvar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Confirmar Exclusão de Categoria -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header modal-header-danger">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Tem certeza de que deseja excluir a seguinte categoria?</p>
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex align-items-center">
-                            <span id="categoryToDeleteColor" style="width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 10px;"></span>
-                            <span id="categoryToDeleteName" class="fw-bold"></span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Excluir</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Editar Categoria -->
-    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editCategoryModalLabel">Editar Categoria</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editCategoryForm">
-                        <div class="mb-3">
-                            <label for="editCategoryName" class="form-label">Nome da Categoria</label>
-                            <input type="text" class="form-control" id="editCategoryName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editCategoryColor" class="form-label">Cor da Categoria</label>
-                            <input type="color" class="form-control form-control-color" id="editCategoryColor" value="#6c757d" title="Escolha uma cor">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveEditCategoryButton">Salvar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Alterar Foto de Perfil -->
-    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="profileModalLabel">Alterar Foto de Perfil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <img src="img/profileExample.jpg" alt="Foto Atual" class="rounded-circle mb-3" 
-                         style="width: 150px; height: 150px; object-fit: cover;">
-                    <form id="profileForm">
-                        <div class="mb-3">
-                            <label for="profileImageInput" class="form-label">Escolha uma nova foto</label>
-                            <input type="file" class="form-control" id="profileImageInput" accept="image/*">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveProfileImageButton">Salvar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const categoryList = document.getElementById("categoryList");
-            const editCategoryNameInput = document.getElementById("editCategoryName");
-
-            categoryList.addEventListener("click", (event) => {
-                const listItem = event.target.closest(".list-group-item");
-                if (listItem && listItem.dataset.categoryName) {
-                    editCategoryNameInput.value = listItem.dataset.categoryName;
-                }
-            });
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/geral.js"></script>
+    <script src="js/personalizar.js"></script>
+    
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const body = document.body;
@@ -265,13 +140,13 @@
                 body.classList.add("dark-theme");
                 icon.className = "bi bi-moon-stars";
                 text.textContent = "Tema Escuro";
-                toggleButton.style.backgroundColor = "#333"; // Cor escura para o tema escuro
+                toggleButton.style.backgroundColor = "#333";
                 toggleButton.style.color = "#fff";
             } else {
                 body.classList.remove("dark-theme");
                 icon.className = "bi bi-sun";
                 text.textContent = "Tema Claro";
-                toggleButton.style.backgroundColor = "#f8f9fa"; // Cor clara para o tema claro
+                toggleButton.style.backgroundColor = "#f8f9fa";
                 toggleButton.style.color = "#000";
             }
             localStorage.setItem("theme", theme);
@@ -290,5 +165,4 @@
     });
     </script>
 </body>
-
 </html>

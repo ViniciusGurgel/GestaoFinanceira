@@ -39,17 +39,17 @@ router.delete('/deletar_categoria/:id', (req, res) => {
 });
 
 // Rota para alterar uma categoria
-router.put('/alterar_categoria/:id', (req, res) => {
+router.put('/editar_categoria/:id', (req, res) => { 
     const db = req.db;
     const { id } = req.params;
-    const { nome } = req.body;
+    const { nome, cor } = req.body;  
 
     if (!nome) {
         return res.status(400).json({ error: "O nome da categoria é obrigatório." });
     }
 
-    const sql = `UPDATE Categoria SET Nome = ? WHERE Id = ?`;
-    const params = [nome, id];
+    const sql = `UPDATE Categoria SET Nome = ?, Cor = ? WHERE Id = ?`;
+    const params = [nome, cor || "#6c757d", id]; 
 
     db.run(sql, params, function (err) {
         if (err) {
@@ -58,10 +58,13 @@ router.put('/alterar_categoria/:id', (req, res) => {
         }
 
         if (this.changes === 0) {
-            return res.status(404).json({ error: "Categoria não encontrada ou nome já está em uso." });
+            return res.status(404).json({ error: "Categoria não encontrada." });
         }
 
-        res.json({ message: "Categoria atualizada com sucesso!" });
+        res.json({ 
+            message: "Categoria atualizada com sucesso!",
+            categoria: { Id: id, Nome: nome, Cor: cor }
+        });
     });
 });
 
