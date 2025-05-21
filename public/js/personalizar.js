@@ -11,6 +11,64 @@ async function fetchComToken(url, options = {}) {
     return fetch(url, { ...options, headers });
 }
 
+// Modal para adicionar/editar categorias
+function criarModalCategoria(categoria = null) {
+    // Remove modal existente se houver
+    const modalExistente = document.getElementById('categoryModal');
+    if (modalExistente) modalExistente.remove();
+
+    const modalHTML = `
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">${categoria ? 'Editar' : 'Nova'} Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Nome da Categoria</label>
+                            <input type="text" class="form-control" id="categoryName" 
+                                   value="${categoria?.Nome || ''}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryColor" class="form-label">Cor da Categoria</label>
+                            <input type="color" class="form-control form-control-color" id="categoryColor" 
+                                   value="${categoria?.Cor || '#6c757d'}" title="Escolha uma cor">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+    
+    return new Promise((resolve) => {
+        document.getElementById('saveCategoryBtn').addEventListener('click', () => {
+            const nome = document.getElementById('categoryName').value.trim();
+            const cor = document.getElementById('categoryColor').value;
+            
+            if (!nome) {
+                alert('Por favor, insira um nome para a categoria');
+                return;
+            }
+            
+            modal.hide();
+            resolve({ nome, cor });
+        });
+        
+        modal.show();
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const categoryList = document.getElementById("categoryList");
     const addCategoryButton = document.getElementById("addCategoryButton");
@@ -18,10 +76,18 @@ document.addEventListener("DOMContentLoaded", function() {
     // Carregar categorias
     function carregarCategorias() {
         fetchComToken('/personalizar/listar_categorias')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error("Erro ao carregar categorias");
+                return response.json();
+            })
             .then(categorias => {
-                console.log("Dados completos das categorias:", categorias);
                 categoryList.innerHTML = '';
+                
+                if (categorias.length === 0) {
+                    categoryList.innerHTML = '<li class="list-group-item text-muted">Nenhuma categoria cadastrada</li>';
+                    return;
+                }
+
                 categorias.forEach(categoria => {
                     const li = document.createElement('li');
                     li.className = "list-group-item d-flex align-items-center justify-content-between";
@@ -33,10 +99,10 @@ document.addEventListener("DOMContentLoaded", function() {
                             ${categoria.Nome}
                         </div>
                         <div>
-                            <button class="btn btn-sm btn-primary me-1 edit-category-btn">
+                            <button class="btn btn-sm btn-primary me-1 edit-category-btn" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger delete-category-btn">
+                            <button class="btn btn-sm btn-danger delete-category-btn" title="Excluir">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -45,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Evento para editar
                     li.querySelector('.edit-category-btn').addEventListener('click', (e) => {
                         e.stopPropagation();
-                        editarCategoria(categoria.Id);
+                        editarCategoria(categoria);
                     });
 
                     // Evento para excluir
@@ -59,91 +125,96 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => {
                 console.error("Erro ao carregar categorias:", error);
-                alert("Erro ao carregar categorias");
+                categoryList.innerHTML = `<li class="list-group-item text-danger">Erro ao carregar categorias: ${error.message}</li>`;
             });
     }
 
     // Adicionar categoria
-    addCategoryButton.addEventListener('click', () => {
-        const nome = prompt("Digite o nome da nova categoria:");
-        if (!nome) return;
+    addCategoryButton.addEventListener('click', async () => {
+        try {
+            const { nome, cor } = await criarModalCategoria();
+            
+            const response = await fetchComToken('/personalizar/incluir_categoria', {
+                method: 'POST',
+                body: JSON.stringify({ nome, cor })
+            });
 
-        fetchComToken('/personalizar/incluir_categoria', {
-            method: 'POST',
-            body: JSON.stringify({ nome: nome, cor: "#6c757d" })
-        })
-        .then(response => {
             if (!response.ok) throw new Error("Erro ao adicionar categoria");
-            alert("Categoria adicionada com sucesso!");
+            
+            // Feedback visual
+            addCategoryButton.innerHTML = '<i class="bi bi-check-circle"></i> Categoria adicionada!';
+            setTimeout(() => {
+                addCategoryButton.innerHTML = 'Adicionar Categoria';
+            }, 2000);
+            
             carregarCategorias();
-        })
-        .catch(error => {
+        } catch (error) {
             console.error("Erro:", error);
             alert("Erro ao adicionar categoria: " + error.message);
-        });
+        }
     });
 
     // Editar categoria
-    function editarCategoria(categoriaId) {
-        // Primeiro encontre a categoria na lista
-        const categoria = Array.from(categoryList.children)
-            .find(item => item.dataset.categoryId == categoriaId);
-        
-        if (!categoria) {
-            alert("Categoria não encontrada!");
-            return;
-        }
-    
-        // Pegue o nome atual da categoria
-        const nomeAtual = categoria.querySelector('div.d-flex.align-items-center').textContent.trim();
-        
-        const novoNome = prompt("Editar nome da categoria:", nomeAtual);
-        if (!novoNome) return;
-    
-        fetchComToken(`/personalizar/editar_categoria/${categoriaId}`, {
-            method: 'PUT',
-            body: JSON.stringify({ 
-                nome: novoNome,
-                cor: "#6c757d" // Ou mantenha a cor existente se necessário
-            })
-        })
-        .then(response => {
+    async function editarCategoria(categoria) {
+        try {
+            const { nome, cor } = await criarModalCategoria(categoria);
+            
+            const response = await fetchComToken(`/personalizar/editar_categoria/${categoria.Id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ nome, cor })
+            });
+
             if (!response.ok) throw new Error("Erro ao editar categoria");
-            return response.json();
-        })
-        .then(data => {
-            // Atualiza apenas o nome na interface sem recarregar tudo
-            categoria.querySelector('div.d-flex.align-items-center').innerHTML = `
-                <span class="category-color" 
-                      style="width: 20px; height: 20px; 
-                      background-color: #6c757d; 
-                      border-radius: 50%; margin-right: 10px;"></span>
-                ${novoNome}
-            `;
-            alert("Categoria atualizada com sucesso!");
-        })
-        .catch(error => {
+            
+            // Atualiza a categoria na lista
+            const categoriaElement = document.querySelector(`li[data-category-id="${categoria.Id}"]`);
+            if (categoriaElement) {
+                categoriaElement.querySelector('div.d-flex.align-items-center').innerHTML = `
+                    <span class="category-color" 
+                          style="width: 20px; height: 20px; 
+                          background-color: ${cor}; 
+                          border-radius: 50%; margin-right: 10px;"></span>
+                    ${nome}
+                `;
+                
+                // Feedback visual
+                const editBtn = categoriaElement.querySelector('.edit-category-btn');
+                editBtn.innerHTML = '<i class="bi bi-check"></i>';
+                setTimeout(() => {
+                    editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+                }, 1500);
+            }
+        } catch (error) {
             console.error("Erro:", error);
             alert("Erro ao editar categoria: " + error.message);
-        });
+        }
     }
 
     // Excluir categoria
-    function excluirCategoria(id, elemento) {
-        if (!confirm("Tem certeza que deseja excluir esta categoria?")) return;
+    async function excluirCategoria(id, elemento) {
+        if (!confirm("Tem certeza que deseja excluir esta categoria?\nEsta ação não pode ser desfeita.")) return;
 
-        fetchComToken(`/personalizar/deletar_categoria/${id}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
+        try {
+            const response = await fetchComToken(`/personalizar/deletar_categoria/${id}`, {
+                method: 'DELETE'
+            });
+
             if (!response.ok) throw new Error("Erro ao excluir categoria");
-            alert("Categoria excluída com sucesso!");
-            elemento.remove();
-        })
-        .catch(error => {
+            
+            // Animação de remoção
+            elemento.classList.add('fade-out');
+            setTimeout(() => {
+                elemento.remove();
+                
+                // Se não houver mais categorias, mostra mensagem
+                if (categoryList.children.length === 0) {
+                    categoryList.innerHTML = '<li class="list-group-item text-muted">Nenhuma categoria cadastrada</li>';
+                }
+            }, 300);
+        } catch (error) {
             console.error("Erro:", error);
             alert("Erro ao excluir categoria: " + error.message);
-        });
+        }
     }
 
     // Inicializa
