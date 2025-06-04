@@ -66,20 +66,51 @@
     <!-- Conteúdo principal -->
     <div class="main-content container-fluid">
         <h1 class="text-center mb-4">Relatório Financeiro</h1>
+        
+        <!-- Seletor de Período -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Selecione o Período</h2>
+                <form id="dateFilterForm">
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <label for="startDate" class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" id="startDate" required>
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label for="endDate" class="form-label">Data Final</label>
+                            <input type="date" class="form-control" id="endDate" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end mb-3">
+                            <div class="d-flex gap-2 w-100">
+                                <button type="button" class="btn btn-primary flex-grow-1" id="applyFilter">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <button type="button" class="btn btn-secondary flex-grow-1" id="resetFilter">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
         <!-- Síntese dos Dados -->
         <div class="card mb-4">
             <div class="card-body">
                 <h2 class="card-title text-center">Síntese dos Dados</h2>
-                <p class="text-center">Este relatório resume as transações realizadas no último mês. Abaixo estão os
+                <p class="text-center">Este relatório resume as transações realizadas no período selecionado. Abaixo estão os
                     dados principais:</p>
                 <ul class="list-group">
-                    <li class="list-group-item"><strong>Total de transações:</strong> 30 transações</li>
-                    <li class="list-group-item"><strong>Total gasto:</strong> R$ 3.500,00</li>
-                    <li class="list-group-item"><strong>Categoria com maior gasto:</strong> Alimentação</li>
-                    <li class="list-group-item"><strong>Data mais recente:</strong> 22/03/2025</li>
+                    <li class="list-group-item"><strong>Total de transações:</strong> <span id="totalTransacoes">0</span> transações</li>
+                    <li class="list-group-item"><strong>Total gasto:</strong> R$ <span id="totalGasto">0,00</span></li>
+                    <li class="list-group-item"><strong>Categoria com maior gasto:</strong> <span id="categoriaMaiorGasto">-</span></li>
+                    <li class="list-group-item"><strong>Data mais recente:</strong> <span id="dataRecente">-</span></li>
                 </ul>
             </div>
         </div>
+        
         <!-- Gráficos -->
         <div class="row">
             <!-- Gráfico de Barras -->
@@ -110,158 +141,44 @@
             <button class="btn btn-primary" id="downloadBtn">Baixar Relatório em PDF</button>
         </div>
     </div>
+    
+    <script src="js/relatorios.js"></script>
     <script>
-        // Função genérica para mostrar alerta
-        function mostrarAlerta(id) {
-            const alerta = document.getElementById(id);
-            alerta.classList.remove('d-none');
-            alerta.classList.add('show');
-            setTimeout(() => {
-                alerta.classList.remove('show');
-                alerta.classList.add('d-none');
-            }, 1750);
+    document.addEventListener("DOMContentLoaded", () => {
+        const body = document.body;
+        const toggleButton = document.getElementById("toggleThemeButton");
+        const icon = document.getElementById("themeIcon");
+        const text = document.getElementById("themeText");
+
+        // Função para aplicar o tema
+        function applyTheme(theme) {
+            if (theme === "dark") {
+                body.classList.add("dark-theme");
+                icon.className = "bi bi-moon-stars";
+                text.textContent = "Tema Escuro";
+                toggleButton.style.backgroundColor = "#333";
+                toggleButton.style.color = "#fff";
+            } else {
+                body.classList.remove("dark-theme");
+                icon.className = "bi bi-sun";
+                text.textContent = "Tema Claro";
+                toggleButton.style.backgroundColor = "#f8f9fa";
+                toggleButton.style.color = "#000";
+            }
+            localStorage.setItem("theme", theme);
         }
 
-        // Alerta de geração de PDF
-        document.getElementById('downloadBtn').addEventListener('click', function () {
-            mostrarAlerta('alertaDownload');
+        // Aplica o tema salvo
+        const savedTheme = localStorage.getItem("theme") || "light";
+        applyTheme(savedTheme);
+
+        // Evento de clique para alternar tema
+        toggleButton.addEventListener("click", () => {
+            const currentTheme = body.classList.contains("dark-theme") ? "dark" : "light";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            applyTheme(newTheme);
         });
-    </script>
-    <script>
-        // Inicialização dos gráficos
-        document.addEventListener("DOMContentLoaded", function () {
-            // Gráfico de Barras
-            const barChartCtx = document.getElementById('barChart').getContext('2d');
-            new Chart(barChartCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
-                    datasets: [{
-                        label: 'Gastos (R$)',
-                        data: [1500, 800, 500, 700],
-                        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
-                        borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                    },
-                }
-            });
-
-            // Gráfico de Pizza
-            const pieChartCtx = document.getElementById('pieChart').getContext('2d');
-            new Chart(pieChartCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Alimentação', 'Transporte', 'Lazer', 'Saúde'],
-                    datasets: [{
-                        data: [1500, 800, 500, 700],
-                        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#F44336'],
-                        borderColor: ['#388E3C', '#FFA000', '#1976D2', '#D32F2F'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                    },
-                }
-            });
-        });
-
-        // Função para baixar o relatório em PDF
-        document.getElementById('downloadBtn').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(20);
-            doc.text('Relatório Financeiro', 105, 20, null, null, 'center');
-
-            doc.setFontSize(16);
-            doc.text('Síntese dos Dados', 20, 40);
-
-            doc.setFontSize(12);
-            doc.text('Este relatório resume as transações realizadas no último mês. Abaixo estão os dados principais:', 20, 50);
-            doc.text('Total de transações: 30 transações', 20, 60);
-            doc.text('Total gasto: R$ 3.500,00', 20, 70);
-            doc.text('Categoria com maior gasto: Alimentação', 20, 80);
-            doc.text('Data mais recente: 22/03/2025', 20, 90);
-
-            doc.save('relatorio_financeiro.pdf');
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const menuButton = document.querySelector(".menu-button");
-            const sidebar = document.querySelector(".sidebar");
-            const mainContent = document.querySelector(".main-content");
-
-            menuButton.addEventListener("click", function () {
-                sidebar.classList.toggle("active");
-                mainContent.classList.toggle("shift");
-            });
-        });
-
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const body = document.body;
-            const toggleButton = document.getElementById("toggleThemeButton");
-            const icon = document.getElementById("themeIcon");
-            const text = document.getElementById("themeText");
-            const page = document.querySelector(".main-content");
-            const cards = document.querySelectorAll(".card");
-            const table = document.querySelector(".table");
-
-            // Função para aplicar o tema
-            function applyTheme(theme) {
-                if (theme === "dark") {
-                    body.classList.add("dark-theme");
-                    icon.className = "bi bi-moon-stars";
-                    text.textContent = "Tema Escuro";
-                    toggleButton.style.backgroundColor = "#333";
-                    toggleButton.style.color = "#fff";
-                    page.style.background = "linear-gradient(135deg, #0f2027, #203a43, #2c5364)";
-                    cards.forEach(card => {
-                        card.style.backgroundColor = "#333";
-                        card.style.color = "#fff";
-                    });
-                    if (table) {
-                        table.classList.add("table-dark");
-                    }
-                } else {
-                    body.classList.remove("dark-theme");
-                    icon.className = "bi bi-sun";
-                    text.textContent = "Tema Claro";
-                    toggleButton.style.backgroundColor = "#f8f9fa";
-                    toggleButton.style.color = "#000";
-                    page.style.backgroundColor = "#fff";
-                    cards.forEach(card => {
-                        card.style.backgroundColor = "#fff";
-                        card.style.color = "#000";
-                    });
-                    if (table) {
-                        table.classList.remove("table-dark");
-                    }
-                }
-                localStorage.setItem("theme", theme);
-            }
-
-            // Aplica o tema salvo
-            const savedTheme = localStorage.getItem("theme") || "light";
-            applyTheme(savedTheme);
-
-            // Evento de clique para alternar tema
-            toggleButton.addEventListener("click", () => {
-                const currentTheme = body.classList.contains("dark-theme") ? "dark" : "light";
-                const newTheme = currentTheme === "dark" ? "light" : "dark";
-                applyTheme(newTheme);
-            });
-        });
-
+    });
     </script>
 </body>
 

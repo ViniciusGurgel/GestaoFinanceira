@@ -8,6 +8,7 @@ require('dotenv').config();
 const transacaoRouter = require('./backend/transacoes.js');
 const authRouter = require('./backend/auth.js');
 const personalizarRouter = require('./backend/personalizar.js');
+const realtorioRouter = require('./backend/relatorio.js');
 
 const app = express();
 const port = 5555;
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', transacaoRouter);
 app.use('/auth', authRouter);
 app.use('/personalizar', personalizarRouter);
+app.use('/relatorio', realtorioRouter);
 
 // Servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
