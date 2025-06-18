@@ -40,23 +40,15 @@ function inserirDadosIniciais(db) {
         });
 
         // Metas Financeiras
-        db.run(`INSERT OR IGNORE INTO MetaFinanceira 
-            (CategoriaId, Nome, ValorLimite, ValorAtual, PeriodoInicio, PeriodoFim, TipoMeta, Status) VALUES 
-            (1, 'Limite Supermercado', 500.00, 150.75, '2024-03-01', '2024-03-31', 'GASTO', 'ATIVA'),
-            (3, 'Economia para Lazer', 200.00, 50.00, '2024-03-01', '2024-03-31', 'ECONOMIA', 'ATIVA'),
-            (5, 'Gastos com Saúde', 300.00, 120.00, '2024-03-01', '2024-03-31', 'GASTO', 'ATIVA')`, (err) => {
-            if (err) console.error('Erro ao inserir MetaFinanceira:', err);
+        db.run(`INSERT OR IGNORE INTO Metas 
+            (title, saved, goal, minMonthly, monthsLeft) VALUES 
+            ('Limite Supermercado', 152, 500.00, 50.00, 1),
+            ('Economia para Lazer', 50.00, 200.00, 25.00, 2),
+            ('Economia para Lazer 2', 52.00, 150.00, 20.00, 2),
+            ('Economia para Lazer 3', 50.00, 100.00, 18.00, 3),
+            ('Gastos com Saúde', 120.00, 300.00, 60.00, 1)`, (err) => {
+            if (err) console.error('Erro ao inserir Metas:', err);
         });
-
-        // Progresso das Metas (novo)
-        db.run(`INSERT OR IGNORE INTO MetaProgresso 
-            (MetaId, DataRegistro, ValorAdicionado, TransacaoId) VALUES 
-            (1, '2024-03-24', 150.75, 1),
-            (2, '2024-03-10', 50.00, 3),
-            (3, '2024-03-05', 120.00, 4)`, (err) => {
-            if (err) console.error('Erro ao inserir MetaProgresso:', err);
-        });
-
     });
 }
 
@@ -106,34 +98,15 @@ function inicializarBancoUsuario(userId) {
             FOREIGN KEY (MeioPagamentoId) REFERENCES MeioPagamento(Id)
         )`);
 
-        db.run(`CREATE TABLE IF NOT EXISTS MetaFinanceira (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            CategoriaId INTEGER,
-            Nome TEXT NOT NULL,
-            ValorLimite REAL NOT NULL,
-            ValorAtual REAL DEFAULT 0,
-            PeriodoInicio DATE NOT NULL,
-            PeriodoFim DATE NOT NULL,
-            TipoMeta TEXT CHECK(TipoMeta IN ('GASTO', 'ECONOMIA')) NOT NULL,
-            Status TEXT CHECK(Status IN ('ATIVA', 'CONCLUIDA', 'CANCELADA')) DEFAULT 'ATIVA',
-            Notificacoes BOOLEAN DEFAULT 1,
-            FOREIGN KEY (CategoriaId) REFERENCES Categoria(Id)
+        db.run(`CREATE TABLE IF NOT EXISTS Metas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            saved REAL DEFAULT 0,
+            goal REAL NOT NULL,
+            minMonthly REAL NOT NULL,
+            monthsLeft INTEGER NOT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`);
-
-        // Tabela de Progresso (nova)
-        db.run(`CREATE TABLE IF NOT EXISTS MetaProgresso (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            MetaId INTEGER NOT NULL,
-            DataRegistro DATE NOT NULL,
-            ValorAdicionado REAL NOT NULL,
-            TransacaoId INTEGER,
-            FOREIGN KEY (MetaId) REFERENCES MetaFinanceira(Id),
-            FOREIGN KEY (TransacaoId) REFERENCES Transacao(Id)
-        )`);
-
-        db.run(`CREATE INDEX IF NOT EXISTS idx_meta_categoria ON MetaFinanceira(CategoriaId)`);
-        db.run(`CREATE INDEX IF NOT EXISTS idx_meta_periodo ON MetaFinanceira(PeriodoInicio, PeriodoFim)`);
-        db.run(`CREATE INDEX IF NOT EXISTS idx_progresso_meta ON MetaProgresso(MetaId)`);
 
         // 👇 Insere dados logo após criar as tabelas
         inserirDadosIniciais(db);
